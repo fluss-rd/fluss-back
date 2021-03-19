@@ -50,22 +50,23 @@ func (m mongoRepository) GetRole(ctx context.Context, roleName string) (models.R
 	return models.Role{}, nil
 }
 
-func (m mongoRepository) CreateRole(ctx context.Context, role models.Role) (models.Role, error) {
+func (m mongoRepository) CreateRole(ctx context.Context, role models.Role) error {
 	collection := m.getRolesCollection()
 
-	result, err := collection.InsertOne(ctx, role)
+	_, err := collection.InsertOne(ctx, role)
 	if errors.As(err, &mongo.WriteException{}) {
 		mongoErr, _ := err.(mongo.WriteException)
 		switch mongoErr.WriteErrors[0].Code {
 		case mongoDuplicateCode:
-			return models.Role{}, repository.ErrDuplicateFields
+			return repository.ErrDuplicateFields
 		}
 	}
 
 	if err != nil {
-		return models.Role{}, nil
+		return err
 	}
 
+	return nil
 }
 
 func (m mongoRepository) getRolesCollection() *mongo.Collection {

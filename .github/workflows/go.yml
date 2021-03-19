@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install
-        run: pwd
+        run: go get github.com/cvgw/gocheckcov
 
-      - name: Hey
-        run: ls
+      - name: Check coverage
+        run: gocheckcov check --minimum-coverage 66.6
