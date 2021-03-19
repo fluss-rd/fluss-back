@@ -77,8 +77,7 @@ jobs:
     name: Code coverage sec
     runs-on: ubuntu-latest
     steps:
-      - name: Install
-        run: go get github.com/cvgw/gocheckcov
-
-      - name: Check coverage
-        run: gocheckcov check --minimum-coverage 66.6
+      - name: Install and check coverage
+        run: |
+          go get github.com/cvgw/gocheckcov
+          gocheckcov check --minimum-coverage 66.6
