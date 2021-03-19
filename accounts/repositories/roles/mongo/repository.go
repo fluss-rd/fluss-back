@@ -21,10 +21,10 @@ var (
 )
 
 type mongoRepository struct {
-	client mongo.Client
+	client *mongo.Client
 }
 
-func New(ctx context.Context, client mongo.Client) mongoRepository {
+func New(client *mongo.Client) mongoRepository {
 	return mongoRepository{
 		client: client,
 	}

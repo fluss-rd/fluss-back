@@ -8,11 +8,11 @@ const (
 )
 
 type Role struct {
-	Name        string
-	Permissions []Permission
+	Name        string       `json:"roleName" bson:"roleName"`
+	Permissions []Permission `bson:"permissions"`
 }
 
 type Permission struct {
-	Resource ResourceType
-	Action   string
+	Resource ResourceType `bson:"resource"`
+	Action   string       `bson:"action"`
 }
