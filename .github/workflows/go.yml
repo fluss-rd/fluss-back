@@ -76,8 +76,8 @@ jobs:
   coverage:
     name: Code coverage sec
     steps:
-      -name: Install
-      run: pwd
+      - name: Install
+        run: pwd
 
-      -name: Hey
-      run: ls
+      - name: Hey
+        run: ls
