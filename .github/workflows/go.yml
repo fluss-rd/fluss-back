@@ -73,3 +73,11 @@ jobs:
         run: sec
         token: ${{ secrets.GITHUB_TOKEN }}
         flags: "-exclude=G104"
+  coverage:
+    name: Code coverage sec
+    steps:
+      -name: Install
+      run: pwd
+
+      -name: Hey
+      run: ls
