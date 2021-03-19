@@ -80,4 +80,4 @@ jobs:
       - name: Install and check coverage
         run: |
           go get github.com/cvgw/gocheckcov
-          gocheckcov check --minimum-coverage 66.6
+          $GOPATH/bin/gocheckcov check --minimum-coverage 66.6
