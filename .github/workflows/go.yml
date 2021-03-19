@@ -75,6 +75,7 @@ jobs:
         flags: "-exclude=G104"
   coverage:
     name: Code coverage sec
+    runs-on: ubuntu-latest
     steps:
       - name: Install
         run: pwd
