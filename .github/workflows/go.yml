@@ -83,17 +83,17 @@ jobs:
           go-version: 1.15
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Debug
-        run: |
-          cd ${HOME}
-          mkdir -p go/{src,bin}
-          mkdir -p go/src/github.com/flussrd
-          mv work/fluss-back/fluss-back go/src/github.com/flussrd
-          echo $(pwd) 
-          echo $(ls)
-          cd go/src/github.com/flussrd/fluss-back
-          export GO111MODULE=on
-          echo $GOROOT
-          go get github.com/cvgw/gocheckcov
-          gocheckcov check --skip-dirs cmd,accounts/repositories/roles/mongo --minimum-coverage 10 ./...
+      # - name: Debug
+      #   run: |
+      #     cd ${HOME}
+      #     mkdir -p go/{src,bin}
+      #     mkdir -p go/src/github.com/flussrd
+      #     mv work/fluss-back/fluss-back go/src/github.com/flussrd
+      #     echo $(pwd) 
+      #     echo $(ls)
+      #     cd go/src/github.com/flussrd/fluss-back
+      #     export GO111MODULE=on
+      #     echo $GOROOT
+      #     go get github.com/cvgw/gocheckcov
+      #     gocheckcov check --skip-dirs cmd,accounts/repositories/roles/mongo --minimum-coverage 10 ./...
 
