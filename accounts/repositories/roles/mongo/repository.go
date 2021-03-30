@@ -17,20 +17,24 @@ const (
 )
 
 var (
+	// ErrNotFound not found
 	ErrNotFound = errors.New("not found")
 )
 
-type mongoRepository struct {
+// MongoRepository repository entitie to be used with mongoDB
+type MongoRepository struct {
 	client *mongo.Client
 }
 
-func New(client *mongo.Client) mongoRepository {
-	return mongoRepository{
+// New returns a new mongo repository
+func New(client *mongo.Client) MongoRepository {
+	return MongoRepository{
 		client: client,
 	}
 }
 
-func (m mongoRepository) GetRole(ctx context.Context, roleName string) (models.Role, error) {
+// GetRole returns a role from the database from the roleName
+func (m MongoRepository) GetRole(ctx context.Context, roleName string) (models.Role, error) {
 	rolesCollection := m.getRolesCollection()
 
 	role := models.Role{}
@@ -50,7 +54,8 @@ func (m mongoRepository) GetRole(ctx context.Context, roleName string) (models.R
 	return models.Role{}, nil
 }
 
-func (m mongoRepository) CreateRole(ctx context.Context, role models.Role) error {
+// CreateRole stores a new role in the database
+func (m MongoRepository) CreateRole(ctx context.Context, role models.Role) error {
 	collection := m.getRolesCollection()
 
 	_, err := collection.InsertOne(ctx, role)
@@ -69,6 +74,6 @@ func (m mongoRepository) CreateRole(ctx context.Context, role models.Role) error
 	return nil
 }
 
-func (m mongoRepository) getRolesCollection() *mongo.Collection {
+func (m MongoRepository) getRolesCollection() *mongo.Collection {
 	return m.client.Database(databaseName).Collection("roles")
 }
