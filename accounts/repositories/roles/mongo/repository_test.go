@@ -32,5 +32,8 @@ func TestCreateRole(t *testing.T) {
 	err = repo.CreateRole(context.Background(), models.Role{Name: "Admin"})
 	c.Nil(err)
 
-	defer repo.client.Disconnect(ctx)
+	defer func() {
+		err := repo.client.Disconnect(ctx)
+		c.Nil(err)
+	}()
 }
