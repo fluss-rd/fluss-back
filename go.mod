@@ -7,6 +7,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/stretchr/testify v1.7.0
 	github.com/strikesecurity/strikememongo v0.2.4
+	github.com/subosito/gotenv v1.2.0
 	go.mongodb.org/mongo-driver v1.5.0
 	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b // indirect
 	gopkg.in/yaml.v2 v2.4.0

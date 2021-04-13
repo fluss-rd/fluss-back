@@ -95,5 +95,5 @@ jobs:
           export GO111MODULE=on
           echo $GOROOT
           go get github.com/cvgw/gocheckcov
-          gocheckcov check --skip-dirs cmd,accounts/repositories/roles/mongo --minimum-coverage 10 ./...
+          gocheckcov check --skip-dirs app/cmd,app/accounts/repositories/roles/mongo --minimum-coverage 10 ./...
 
