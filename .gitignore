@@ -30,6 +30,7 @@
 
 # Local History for Visual Studio Code
 .history/
+/idea
 
 
 # Configuration files
@@ -39,3 +40,5 @@
 
 # Data
 /data
+
+/build
