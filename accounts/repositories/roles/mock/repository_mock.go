@@ -15,14 +15,14 @@ type Repository struct {
 }
 
 // CreateRole provides a mock function with given fields: ctx, role
-func (_m *Repository) CreateRole(ctx context.Context, role models.Role) models.Role {
+func (_m *Repository) CreateRole(ctx context.Context, role models.Role) error {
 	ret := _m.Called(ctx, role)
 
-	var r0 models.Role
-	if rf, ok := ret.Get(0).(func(context.Context, models.Role) models.Role); ok {
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, models.Role) error); ok {
 		r0 = rf(ctx, role)
 	} else {
-		r0 = ret.Get(0).(models.Role)
+		r0 = ret.Error(0)
 	}
 
 	return r0

@@ -33,7 +33,7 @@ func (s service) AddRoleToUser(ctx context.Context, roleName string, userID stri
 
 // CreateRole creates a new role
 func (s service) CreateRole(ctx context.Context, role models.Role) error {
-	return nil
+	return s.rolesRepo.CreateRole(ctx, role)
 }
 
 // UpdateRole updates a role

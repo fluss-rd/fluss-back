@@ -27,7 +27,7 @@ func TestCreateRole(t *testing.T) {
 	err = client.Connect(ctx)
 	c.Nil(err)
 
-	repo := New(client)
+	repo := mongoRepository{client: client}
 
 	err = repo.CreateRole(context.Background(), models.Role{Name: "Admin"})
 	c.Nil(err)
