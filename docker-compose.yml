@@ -1,0 +1,20 @@
+version: "3.4"
+services:
+  accounts:
+    environment:
+      CONFIG_FILE: app/accounts/config/config.yml
+      MONGO_URL: mongodb://db:27017/test
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.accounts
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+  db:
+    image: mongo
+    volumes:
+      - ./data:/data/db
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    ports:
+      - 27017:27017

@@ -30,3 +30,12 @@
 
 # Local History for Visual Studio Code
 .history/
+
+
+# Configuration files
+*/config/*prod*.yml
+*/config/*prod*.yaml
+
+
+# Data
+/data
