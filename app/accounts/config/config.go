@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 
 	env "github.com/caarlos0/env/v6"
@@ -40,7 +41,7 @@ func GetConfig(filename string) (*AppConfig, error) {
 		return GetConfigFromEnv()
 	}
 
-	fileContent, err := ioutil.ReadFile(filename)
+	fileContent, err := ioutil.ReadFile(filepath.Clean(filename))
 	if err != nil {
 		return nil, fmt.Errorf("%w:%s", ErrCouldNotReadFile, err.Error())
 	}
