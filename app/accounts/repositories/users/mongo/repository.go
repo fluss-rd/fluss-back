@@ -31,19 +31,26 @@ func New(client *mongo.Client) MongoRepository {
 
 // GetUser returns a user from the database from a userID
 func (repo MongoRepository) GetUser(ctx context.Context, userID string) (models.User, error) {
+	return repo.getUser(ctx, bson.M{"_id": userID})
+}
+
+// GetUser returns a user from the database from a userID
+func (repo MongoRepository) GetUserByEmail(ctx context.Context, email string) (models.User, error) {
+	return repo.getUser(ctx, bson.M{"email": email})
+}
+
+func (repo MongoRepository) getUser(ctx context.Context, filter bson.M) (models.User, error) {
 	usersCollection := repo.getUsersCollection()
 
 	user := models.User{}
 
-	err := usersCollection.FindOne(ctx, bson.M{
-		"_id": userID,
-	}).Decode(&user)
+	err := usersCollection.FindOne(ctx, filter).Decode(&user)
 
 	if errors.Is(err, mongo.ErrNoDocuments) {
 		return models.User{}, repository.ErrNotFound
 	}
 
-	return models.User{}, nil
+	return user, nil
 }
 
 // SaveUser sabes a user on the database
