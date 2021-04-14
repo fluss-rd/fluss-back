@@ -53,11 +53,13 @@ func (h httpHandler) HandleCreateUser(ctx context.Context) http.HandlerFunc {
 			return
 		}
 
-		err = h.service.CreateUser(ctx, user)
+		user, err = h.service.CreateUser(ctx, user)
 		if err != nil {
 			httputils.RespondWithError(rw, err)
 			return
 		}
+
+		httputils.RespondJSON(rw, http.StatusCreated, user)
 	}
 }
 

@@ -19,15 +19,39 @@ func TestCreateUser(t *testing.T) {
 	service := NewService(&usersRepo, &rolesRepo)
 
 	user := models.User{
-		UserID:      "USR1234",
 		PhoneNumber: "+1809000000",
 		Email:       "email@email.com",
+		Password:    "nvjkfe",
+		Name:        "Francia",
+		RoleName:    "admin",
+	}
+
+	// User that is sent to the repo
+	trasformedUser := models.User{
+		PhoneNumber: "+1809000000",
+		Email:       "email@email.com",
+		Password:    "123",
+		Name:        "Francia",
+		RoleName:    "admin",
+		UserID:      "USR123",
 	}
 
 	ctx := context.Background()
 
-	err := service.CreateUser(ctx, user)
+	generateIDFunction = func(prefix string) (string, error) {
+		return "USR123", nil
+	}
+
+	generatePasswordHashFunction = func(password []byte, cost int) ([]byte, error) {
+		return []byte("123"), nil
+	}
+
+	usersRepo.On("SaveUser", ctx, trasformedUser).Return(trasformedUser, nil)
+
+	insertedUser, err := service.CreateUser(ctx, user)
 	c.Nil(err)
+	c.NotNil(insertedUser)
+	c.NotEmpty(insertedUser.UserID)
 }
 
 func TestAddRoleToUser(t *testing.T) {

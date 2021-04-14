@@ -8,7 +8,7 @@ import (
 
 // UserUseCase defines the usecases functions for the user
 type UserUseCase interface {
-	CreateUser(ctx context.Context, user models.User) error
+	CreateUser(ctx context.Context, user models.User) (models.User, error)
 	AddRoleToUser(ctx context.Context, roleName string, userID string) error
 }
 

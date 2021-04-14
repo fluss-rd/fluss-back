@@ -2,14 +2,8 @@ package repository
 
 import (
 	"context"
-	"errors"
 
 	"github.com/flussrd/fluss-back/app/accounts/models"
-)
-
-var (
-	// ErrDuplicateFields duplicate fields
-	ErrDuplicateFields = errors.New("duplicate fields")
 )
 
 // Repository represents the methods of data persistance

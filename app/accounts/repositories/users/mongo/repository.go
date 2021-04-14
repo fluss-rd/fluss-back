@@ -66,7 +66,7 @@ func (repo MongoRepository) SaveUser(ctx context.Context, user models.User) (mod
 		mongoErr, _ := err.(mongo.WriteException)
 		switch mongoErr.WriteErrors[0].Code {
 		case mongoDuplicateCode:
-			return models.User{}, repository.ErrDuplicateFields
+			return models.User{}, repository.ErrDuplicateFields{Field: mongoErr.WriteErrors[0].Message}
 		}
 	}
 
