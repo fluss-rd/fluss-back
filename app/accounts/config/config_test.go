@@ -59,6 +59,7 @@ func TestGetConfigMissingValue(t *testing.T) {
 	err := os.Unsetenv("APPCONFIG_ENVIRONMENT")
 	c.Nil(err)
 	err = os.Unsetenv("APPCONFIG_PORT")
+	c.Nil(err)
 	err = os.Unsetenv("APPCONFIG_REPOSITORYCONFIG_DATABASETYPE")
 	c.Nil(err)
 	err = os.Unsetenv("APPCONFIG_REPOSITORYCONFIG_CONNECTION")
