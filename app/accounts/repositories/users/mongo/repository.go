@@ -17,13 +17,6 @@ const (
 	mongoDuplicateCode = 11000
 )
 
-var (
-	// ErrNotFound not found
-	ErrNotFound = errors.New("not found")
-
-	duplicateFieldMessages = map[string]error{}
-)
-
 // MongoRepository repository entitie to be used with mongoDB
 type MongoRepository struct {
 	client *mongo.Client
@@ -47,7 +40,7 @@ func (repo MongoRepository) GetUser(ctx context.Context, userID string) (models.
 	}).Decode(&user)
 
 	if errors.Is(err, mongo.ErrNoDocuments) {
-		return models.User{}, ErrNotFound
+		return models.User{}, repository.ErrNotFound
 	}
 
 	return models.User{}, nil
@@ -85,7 +78,7 @@ func (repo MongoRepository) AddRoleToUser(ctx context.Context, userID string, ro
 	})
 
 	if updateResult != nil && updateResult.MatchedCount == 0 {
-		return ErrNotFound
+		return repository.ErrNotFound
 	}
 
 	if err != nil {

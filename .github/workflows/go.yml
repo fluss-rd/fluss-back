@@ -73,6 +73,26 @@ jobs:
         run: sec
         token: ${{ secrets.GITHUB_TOKEN }}
         flags: "-exclude=G104"
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.15
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run tests
+        run: |
+          cd ${HOME}
+          mkdir -p go/{src,bin}
+          mkdir -p go/src/github.com/flussrd
+          cp -R work/fluss-back/fluss-back go/src/github.com/flussrd
+          echo $(pwd) 
+          echo $(ls)
+          cd go/src/github.com/flussrd/fluss-back
+          go test ./...
   coverage:
     name: Code coverage sec
     runs-on: ubuntu-latest

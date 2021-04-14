@@ -47,7 +47,7 @@ func TestCreateUser(t *testing.T) {
 	}
 
 	usersRepo.On("SaveUser", ctx, trasformedUser).Return(trasformedUser, nil)
-
+	rolesRepo.On("GetRole", ctx, "admin").Return(models.Role{Name: "admin"}, nil)
 	insertedUser, err := service.CreateUser(ctx, user)
 	c.Nil(err)
 	c.NotNil(insertedUser)
