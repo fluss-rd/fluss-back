@@ -6,6 +6,7 @@ import (
 	"github.com/gofrs/uuid"
 )
 
+// GenerateID generates a uuid with a prefix
 func GenerateID(prefix string) (string, error) {
 	id, err := uuid.NewV4()
 	if err != nil {

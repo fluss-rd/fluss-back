@@ -22,7 +22,7 @@ var (
 	// ErrMissingPassword missing password
 	ErrMissingPassword = httputils.NewBadRequestError("missing password")
 	// ErrMissingName missing name
-	ErrMisssingName = httputils.NewBadRequestError("missing name")
+	ErrMissingName = httputils.NewBadRequestError("missing name")
 	// ErrMissingRole missing role
 	ErrMissingRole = httputils.NewBadRequestError("missing role")
 	// ErrPasswordHashingFailed password hashing failed
@@ -127,7 +127,7 @@ func validateCreateUserParams(user models.User) error {
 	}
 
 	if user.Name == "" {
-		return ErrMisssingName
+		return ErrMissingName
 	}
 
 	if user.RoleName == "" {
