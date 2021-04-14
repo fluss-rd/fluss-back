@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/caarlos0/env/v6 v6.5.0
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/gorilla/mux v1.8.0
 	github.com/stretchr/testify v1.7.0

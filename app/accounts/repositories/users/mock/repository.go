@@ -49,6 +49,27 @@ func (_m *Repository) GetUser(ctx context.Context, userID string) (models.User, 
 	return r0, r1
 }
 
+// GetUserByEmail provides a mock function with given fields: ctx, email
+func (_m *Repository) GetUserByEmail(ctx context.Context, email string) (models.User, error) {
+	ret := _m.Called(ctx, email)
+
+	var r0 models.User
+	if rf, ok := ret.Get(0).(func(context.Context, string) models.User); ok {
+		r0 = rf(ctx, email)
+	} else {
+		r0 = ret.Get(0).(models.User)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, email)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // SaveUser provides a mock function with given fields: ctx, user
 func (_m *Repository) SaveUser(ctx context.Context, user models.User) (models.User, error) {
 	ret := _m.Called(ctx, user)

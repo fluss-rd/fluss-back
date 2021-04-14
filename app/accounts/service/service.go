@@ -3,7 +3,12 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
+	"net/http"
+	"os"
+	"time"
 
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/flussrd/fluss-back/app/accounts/models"
 	rolesRepository "github.com/flussrd/fluss-back/app/accounts/repositories/roles"
 	usersRepository "github.com/flussrd/fluss-back/app/accounts/repositories/users"
@@ -41,6 +46,8 @@ var (
 	ErrMissingActionInPermission = httputils.NewBadRequestError("missing actions in permission")
 	// ErrMissingResourceInPermission missing resource in permission
 	ErrMissingResourceInPermission = httputils.NewBadRequestError("missing resource in permission")
+	// ErrInvalidCredentials invalid credentials
+	ErrInvalidCredentials = httputils.ErrorResponse{Code: http.StatusUnauthorized, Message: "invalid credentials"}
 )
 
 var (
@@ -183,4 +190,63 @@ func (s service) UpdateRole(ctx context.Context, role models.Role) error {
 func (s service) GetRoles(ctx context.Context) ([]models.Role, error) {
 	// TODO: handle repo specific errors
 	return s.rolesRepo.GetRoles(ctx)
+}
+
+// Login authenticates a user
+func (s service) Login(ctx context.Context, email string, password string) (LoginResponse, error) {
+	err := validateLoginInput(email, password)
+	if err != nil {
+		return LoginResponse{}, err
+	}
+
+	user, err := s.usersRepo.GetUserByEmail(ctx, email)
+	if errors.Is(err, usersRepository.ErrNotFound) {
+		return LoginResponse{}, ErrInvalidCredentials
+	}
+
+	if !isPasswordCorrect(password, user.Password) {
+		return LoginResponse{}, ErrInvalidCredentials
+	}
+
+	token, err := generateToken(user)
+	if err != nil {
+		return LoginResponse{}, err
+	}
+
+	return LoginResponse{Token: token}, nil
+}
+
+func generateToken(user models.User) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"roleName": user.RoleName,
+		"sub":      user.UserID,
+		"iss":      "fluss-back", // TODO: make this a const
+		"iat":      time.Now(),
+		"exp":      time.Now().Add(time.Hour * 24), // TODO: make the adding a const
+	})
+
+	signedToken, err := token.SignedString([]byte(os.Getenv("TOKEN_SECRET")))
+	if err != nil {
+		return "", fmt.Errorf("error signing token: " + err.Error())
+	}
+
+	return signedToken, nil
+}
+
+func isPasswordCorrect(enteredPassword string, storedPassword string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(storedPassword), []byte(enteredPassword))
+
+	return err == nil
+}
+
+func validateLoginInput(email, password string) error {
+	if email == "" {
+		return ErrMissingEmail
+	}
+
+	if password == "" {
+		return ErrMissingPassword
+	}
+
+	return nil
 }
