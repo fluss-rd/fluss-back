@@ -29,6 +29,10 @@ var (
 	ErrPasswordHashingFailed = errors.New("hashing password failed")
 	// ErrGeneratingIDFailed generating id failed
 	ErrGeneratingIDFailed = errors.New("generating id failed")
+	// ErrValidatingRoleFailed validating role failed
+	ErrValidatingRoleFailed = errors.New("validating role failed")
+	// ErrRoleNotValid role not valid
+	ErrRoleNotValid = httputils.NewBadRequestError("role not valid")
 )
 
 var (
@@ -61,6 +65,15 @@ func (s service) CreateUser(ctx context.Context, user models.User) (models.User,
 		return models.User{}, err
 	}
 
+	isValid, err := s.isValidRole(ctx, user.RoleName)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	if !isValid {
+		return models.User{}, ErrRoleNotValid
+	}
+
 	hashedPassword, err := generatePasswordHashFunction([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return models.User{}, ErrPasswordHashingFailed
@@ -81,6 +94,19 @@ func (s service) CreateUser(ctx context.Context, user models.User) (models.User,
 	}
 
 	return insertedUser, nil
+}
+
+func (s service) isValidRole(ctx context.Context, roleName string) (bool, error) {
+	_, err := s.rolesRepo.GetRole(ctx, roleName)
+	if errors.Is(err, rolesRepository.ErrNotFound) {
+		return false, nil
+	}
+
+	if err != nil {
+		return false, ErrValidatingRoleFailed
+	}
+
+	return true, nil
 }
 
 func validateCreateUserParams(user models.User) error {

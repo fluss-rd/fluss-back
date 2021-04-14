@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/flussrd/fluss-back/app/accounts/models"
@@ -21,6 +20,8 @@ const (
 var (
 	// ErrNotFound not found
 	ErrNotFound = errors.New("not found")
+
+	duplicateFieldMessages = map[string]error{}
 )
 
 // MongoRepository repository entitie to be used with mongoDB
@@ -61,16 +62,14 @@ func (repo MongoRepository) SaveUser(ctx context.Context, user models.User) (mod
 	user.CreationDate = now
 	user.UpdateDate = now
 
-	result, err := collection.InsertOne(ctx, user)
+	_, err := collection.InsertOne(ctx, user)
 	if errors.As(err, &mongo.WriteException{}) {
 		mongoErr, _ := err.(mongo.WriteException)
 		switch mongoErr.WriteErrors[0].Code {
 		case mongoDuplicateCode:
-			return models.User{}, repository.ErrDuplicateFields{Field: mongoErr.WriteErrors[0].Message}
+			return models.User{}, repository.ErrDuplicateFields{}
 		}
 	}
-
-	fmt.Println(result.InsertedID)
 
 	return user, nil
 }

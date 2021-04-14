@@ -8,5 +8,5 @@ type ErrDuplicateFields struct {
 }
 
 func (e ErrDuplicateFields) Error() string {
-	return fmt.Sprintf("duplicate fields: %s", e.Field)
+	return fmt.Sprintf("duplicate fields")
 }

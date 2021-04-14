@@ -1,3 +1,6 @@
+// Create database
+db = new Mongo().getDB("flussDB");
+
 // Collections
 db.createCollection("roles");
 db.createCollection("users");

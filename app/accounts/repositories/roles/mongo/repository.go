@@ -45,7 +45,7 @@ func (m mongoRepository) GetRole(ctx context.Context, roleName string) (models.R
 	}).Decode(&role)
 
 	if errors.Is(err, mongo.ErrNoDocuments) {
-		return models.Role{}, ErrNotFound
+		return models.Role{}, repository.ErrNotFound
 	}
 
 	if err != nil {

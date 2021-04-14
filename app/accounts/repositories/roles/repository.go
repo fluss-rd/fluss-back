@@ -10,6 +10,8 @@ import (
 var (
 	// ErrDuplicateFields duplicate fields
 	ErrDuplicateFields = errors.New("duplicate fields")
+	// ErrNotFound not found
+	ErrNotFound = errors.New("not found")
 )
 
 // Repository represents the methods of data persistance
