@@ -48,7 +48,7 @@ func main() {
 	go func() {
 		err = client.Ping(ctx, readpref.Primary())
 		if err != nil {
-			log.Fatal(fmt.Errorf("Pinging database failed: %w", err))
+			log.Fatal(fmt.Errorf("pinging database failed: %w", err))
 		}
 	}()
 
