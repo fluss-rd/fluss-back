@@ -33,6 +33,14 @@ var (
 	ErrValidatingRoleFailed = errors.New("validating role failed")
 	// ErrRoleNotValid role not valid
 	ErrRoleNotValid = httputils.NewBadRequestError("role not valid")
+	// ErrMissingRoleName missing role name
+	ErrMissingRoleName = httputils.NewBadRequestError("missing role name")
+	// ErrMissingPermissions missing permissions
+	ErrMissingPermissions = httputils.NewBadRequestError("missing permissions")
+	// ErrMissingActionInPermission missing action in permissions
+	ErrMissingActionInPermission = httputils.NewBadRequestError("missing actions in permission")
+	// ErrMissingResourceInPermission missing resource in permission
+	ErrMissingResourceInPermission = httputils.NewBadRequestError("missing resource in permission")
 )
 
 var (
@@ -136,7 +144,34 @@ func (s service) AddRoleToUser(ctx context.Context, roleName string, userID stri
 
 // CreateRole creates a new role
 func (s service) CreateRole(ctx context.Context, role models.Role) error {
+	err := validateCreateRoleParams(role)
+	if err != nil {
+		return err
+	}
+
 	return s.rolesRepo.CreateRole(ctx, role)
+}
+
+func validateCreateRoleParams(role models.Role) error {
+	if role.Name == "" {
+		return ErrMissingRoleName
+	}
+
+	if len(role.Permissions) == 0 {
+		return ErrMissingPermissions
+	}
+
+	for _, permission := range role.Permissions {
+		if permission.Action == "" {
+			return ErrMissingActionInPermission
+		}
+
+		if permission.Resource == "" {
+			return ErrMissingResourceInPermission
+		}
+	}
+
+	return nil
 }
 
 // UpdateRole updates a role
