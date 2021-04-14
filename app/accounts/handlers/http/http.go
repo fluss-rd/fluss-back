@@ -29,6 +29,7 @@ type httpHandler struct {
 	service service.Service
 }
 
+// NewHTTPHandler returns a new HTTPHandler object
 func NewHTTPHandler(service service.Service) HTTPHandler {
 	return httpHandler{
 		service: service,
@@ -86,6 +87,7 @@ func (h httpHandler) HandleCreateRole(ctx context.Context) http.HandlerFunc {
 	}
 }
 
+// HandleGetRoles handles the get roles request
 func (h httpHandler) HandleGetRoles(ctx context.Context) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		roles, err := h.service.GetRoles(ctx)

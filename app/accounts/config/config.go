@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 
 	env "github.com/caarlos0/env/v6"
@@ -34,12 +35,13 @@ type AppConfig struct {
 	} `yaml:"databaseConfig"`
 }
 
+// GetConfig returns the application config to have
 func GetConfig(filename string) (*AppConfig, error) {
 	if filename == "" {
 		return GetConfigFromEnv()
 	}
 
-	fileContent, err := ioutil.ReadFile(filename)
+	fileContent, err := ioutil.ReadFile(filepath.Clean(filename))
 	if err != nil {
 		return nil, fmt.Errorf("%w:%s", ErrCouldNotReadFile, err.Error())
 	}
@@ -63,6 +65,7 @@ func getConfigFromFileContent(fileContent []byte) (*AppConfig, error) {
 	return config, nil
 }
 
+// GetConfigFromEnv returns the application config from environment set variables
 func GetConfigFromEnv() (*AppConfig, error) {
 	var config AppConfig
 

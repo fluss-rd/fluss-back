@@ -20,7 +20,10 @@ import (
 )
 
 func init() {
-	gotenv.Load()
+	err := gotenv.Load()
+	if err != nil {
+		log.Fatal("could not load env vars: " + err.Error())
+	}
 }
 
 func main() {
@@ -43,9 +46,9 @@ func main() {
 	}
 
 	go func() {
-		err := client.Ping(ctx, readpref.Primary())
+		err = client.Ping(ctx, readpref.Primary())
 		if err != nil {
-			log.Fatal(fmt.Errorf("Pinging database failed: %w", err))
+			log.Fatal(fmt.Errorf("pinging database failed: %w", err))
 		}
 	}()
 
