@@ -20,7 +20,10 @@ import (
 )
 
 func init() {
-	gotenv.Load()
+	err := gotenv.Load()
+	if err != nil {
+		log.Fatal("could not load env vars: " + err.Error())
+	}
 }
 
 func main() {
