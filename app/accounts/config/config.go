@@ -34,6 +34,7 @@ type AppConfig struct {
 	} `yaml:"databaseConfig"`
 }
 
+// GetConfign returns the application config to have
 func GetConfig(filename string) (*AppConfig, error) {
 	if filename == "" {
 		return GetConfigFromEnv()
@@ -63,6 +64,7 @@ func getConfigFromFileContent(fileContent []byte) (*AppConfig, error) {
 	return config, nil
 }
 
+// GetConfigFromEnv returns the application config from environment set variables
 func GetConfigFromEnv() (*AppConfig, error) {
 	var config AppConfig
 
