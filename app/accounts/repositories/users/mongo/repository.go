@@ -34,7 +34,7 @@ func (repo MongoRepository) GetUser(ctx context.Context, userID string) (models.
 	return repo.getUser(ctx, bson.M{"_id": userID})
 }
 
-// GetUser returns a user from the database from a userID
+// GetUserByEmail returns a use from the database with the specified email
 func (repo MongoRepository) GetUserByEmail(ctx context.Context, email string) (models.User, error) {
 	return repo.getUser(ctx, bson.M{"email": email})
 }

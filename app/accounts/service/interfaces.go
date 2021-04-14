@@ -19,8 +19,14 @@ type RolesUseCase interface {
 	UpdateRole(ctx context.Context, role models.Role) error
 }
 
+// AuthUseCase defines the usecases function for the auth operations
+type AuthUseCase interface {
+	Login(ctx context.Context, email, password string) (LoginResponse, error)
+}
+
 // Service defines the service layer methods
 type Service interface {
 	RolesUseCase
 	UserUseCase
+	AuthUseCase
 }

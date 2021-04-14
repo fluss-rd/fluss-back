@@ -62,6 +62,8 @@ func main() {
 	router.Handle("/role", handler.HandleGetRoles(ctx)).Methods(http.MethodGet)
 
 	router.Handle("/user", handler.HandleCreateUser(ctx)).Methods(http.MethodPost)
+
+	router.Handle("/login", handler.HandleLogin(ctx)).Methods(http.MethodPost)
 	fmt.Println("Listening...")
 
 	err = http.ListenAndServe(":"+config.Port, router)
