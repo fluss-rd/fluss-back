@@ -28,7 +28,7 @@ func TestSaveUser(t *testing.T) {
 	c.Nil(err)
 
 	defer func() {
-		err := client.Disconnect(ctx)
+		err = client.Disconnect(ctx)
 		c.Nil(err)
 	}()
 
