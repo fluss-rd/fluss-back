@@ -53,7 +53,6 @@ var endpoints = []router.Endpoint{
 // }
 
 func main() {
-	fmt.Println("here")
 	config, err := config.GetConfig(os.Getenv("CONFIG_FILE"))
 	if err != nil {
 		log.Fatal("could not load config: " + err.Error())
@@ -108,5 +107,5 @@ func getMongoClient(ctx context.Context, connectionURL string) (*mongo.Client, e
 }
 
 func handleIndex(rw http.ResponseWriter, r *http.Request) {
-	rw.Write([]byte("Hello world!"))
+	_, _ = rw.Write([]byte("Hello world!"))
 }

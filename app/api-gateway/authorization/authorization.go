@@ -13,6 +13,7 @@ import (
 )
 
 var (
+	// ErrInvalidTokenSigningMethod invalid token signing method
 	ErrInvalidTokenSigningMethod = errors.New("invalid token signing method")
 )
 
@@ -21,7 +22,7 @@ type claims struct {
 	Sub      string `json:"sub"`
 }
 
-//
+// Authorizer defines the authorization methods
 type Authorizer interface {
 	Validate(ctx context.Context, token, resource, action string) (bool, error)
 }
@@ -31,6 +32,7 @@ type authorizer struct {
 	signingMethod jwt.SigningMethod
 }
 
+// NewAuthorizer returna new authorizer entity
 func NewAuthorizer(authRepository repository.Repository, tokenSigningMethod jwt.SigningMethod) Authorizer {
 	return authorizer{repo: authRepository, signingMethod: tokenSigningMethod}
 }
@@ -55,13 +57,13 @@ func (a authorizer) Validate(ctx context.Context, token string, resource string,
 		return false, nil
 	}
 
-	claims, err := getTokenClaims(authToken)
+	tokenClaims, err := getTokenClaims(authToken)
 	if err != nil {
 		return false, err
 	}
 
 	// TODO: validate claims has the requried fields
-	role, err := a.getRole(ctx, claims)
+	role, err := a.getRole(ctx, tokenClaims)
 	if err != nil {
 		return false, err
 	}

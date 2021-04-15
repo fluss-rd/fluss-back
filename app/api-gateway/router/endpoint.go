@@ -44,6 +44,7 @@ type Endpoint struct {
 	Authorized bool
 }
 
+// Router defines the methods for generating routes
 type Router interface {
 	generateRoutes(ctx context.Context) error
 }
