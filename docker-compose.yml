@@ -1,5 +1,16 @@
 version: "3.4"
 services:
+  api-gateway:
+    environment:
+      MONGO_URL: mongodb://db:27017/test
+      CONFIG_FILE: app/api-gateway/config/config.yml
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.apigateway
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
   accounts:
     environment:
       CONFIG_FILE: app/accounts/config/config.yml
@@ -7,8 +18,6 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.accounts
-    ports:
-      - "5000:5000"
     depends_on:
       - db
   db:

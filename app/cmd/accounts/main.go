@@ -12,6 +12,7 @@ import (
 	rolesRepo "github.com/flussrd/fluss-back/app/accounts/repositories/roles/mongo"
 	usersRepo "github.com/flussrd/fluss-back/app/accounts/repositories/users/mongo"
 	"github.com/flussrd/fluss-back/app/accounts/service"
+	gorillaHandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/subosito/gotenv"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -66,7 +67,9 @@ func main() {
 	router.Handle("/login", handler.HandleLogin(ctx)).Methods(http.MethodPost)
 	fmt.Println("Listening...")
 
-	err = http.ListenAndServe(":"+config.Port, router)
+	loggedRouter := gorillaHandlers.LoggingHandler(os.Stdout, router)
+
+	err = http.ListenAndServe(":"+config.Port, loggedRouter)
 	if err != nil {
 		log.Fatal("err starting server: " + err.Error())
 	}
