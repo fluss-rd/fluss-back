@@ -11,6 +11,18 @@ var internalServerError = ErrorResponse{
 	Message: "internal server error",
 }
 
+// ForbiddenError represents a forbidden error response
+var ForbiddenError = ErrorResponse{
+	Code:    http.StatusForbidden,
+	Message: "forbidden",
+}
+
+// UnauthorizedError represents a unauthorized error response
+var UnauthorizedError = ErrorResponse{
+	Code:    http.StatusUnauthorized,
+	Message: "unauthorized",
+}
+
 // ErrorResponse error response
 type ErrorResponse struct {
 	Code    int    `json:"code"`

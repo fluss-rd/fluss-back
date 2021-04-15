@@ -1,0 +1,6 @@
+environment: local
+port: 5000
+databaseConfig:
+    databaseType: mongo
+    connection: ${MONGO_URL}
+    databaseName: test
