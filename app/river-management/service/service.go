@@ -47,15 +47,15 @@ func New(riversRepo riversRepository.Repository, modulesRepo modulesRepository.R
 	}
 }
 
-func (s service) CreateRiver(ctx context.Context, river models.River) error {
+func (s service) CreateRiver(ctx context.Context, river models.River) (models.River, error) {
 	err := validateCreateRiverFields(river)
 	if err != nil {
-		return nil
+		return models.River{}, nil
 	}
 
 	id, err := utils.GenerateID("RVR")
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrGeneratingIDFailed, err.Error())
+		return models.River{}, fmt.Errorf("%w: %s", ErrGeneratingIDFailed, err.Error())
 	}
 
 	// TODO: validate if the user ID exists consuming the accounts service. we should create a client library
@@ -64,10 +64,10 @@ func (s service) CreateRiver(ctx context.Context, river models.River) error {
 
 	err = s.riversRepo.SaveRiver(ctx, river)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrSavingRiverFailed, err.Error())
+		return models.River{}, fmt.Errorf("%w: %s", ErrSavingRiverFailed, err.Error())
 	}
 
-	return nil
+	return river, nil
 }
 
 func validateCreateRiverFields(river models.River) error {
@@ -104,10 +104,10 @@ func (s service) GetRiversN(ctx context.Context) ([]models.River, error) {
 	return rivers, nil
 }
 
-func (s service) CreateModule(ctx context.Context, module models.Module) error {
+func (s service) CreateModule(ctx context.Context, module models.Module) (models.Module, error) {
 	err := validateCreateModuleFields(module)
 	if err != nil {
-		return err
+		return models.Module{}, err
 	}
 
 	// Modules become active as soon we receive the first data coming from the. Until then, the module is inactive
@@ -115,12 +115,12 @@ func (s service) CreateModule(ctx context.Context, module models.Module) error {
 
 	id, err := utils.GenerateID("MDL")
 	if err != nil {
-		return ErrGeneratingIDFailed
+		return models.Module{}, ErrGeneratingIDFailed
 	}
 
 	module.ModuleID = id
 
-	return nil
+	return module, nil
 }
 
 func validateCreateModuleFields(module models.Module) error {
