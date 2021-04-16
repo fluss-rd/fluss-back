@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/flussrd/fluss-back/app/accounts/shared/httputils"
@@ -57,6 +58,7 @@ func (h httpHandler) HandleCreateRiver(ctx context.Context) http.HandlerFunc {
 
 		river, err = h.s.CreateRiver(ctx, river)
 		if err != nil {
+			fmt.Println("creating_river_failed: " + err.Error())
 			httputils.RespondWithError(rw, err)
 			return
 		}

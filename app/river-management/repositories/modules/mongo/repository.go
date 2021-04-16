@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/flussrd/fluss-back/app/river-management/models"
 	repository "github.com/flussrd/fluss-back/app/river-management/repositories/modules"
@@ -40,7 +41,7 @@ func (r mongoRepository) GetModule(ctx context.Context, moduleID string) (models
 		return models.Module{}, err
 	}
 
-	return models.Module{}, nil
+	return module, nil
 }
 
 func (r mongoRepository) GetAllModulesWithOutPagination(ctx context.Context) ([]models.Module, error) {
@@ -77,8 +78,19 @@ func (r mongoRepository) GetModulesByRiver(ctx context.Context) ([]models.Module
 	return nil, "", nil
 }
 
-func (r mongoRepository) SaveModule(ctx context.Context, module models.Module) error {
-	return nil
+func (r mongoRepository) SaveModule(ctx context.Context, module models.Module) (models.Module, error) {
+	collection := r.getModulesCollection()
+
+	module.CreationDate = time.Now()
+	module.UpdateDate = time.Now()
+
+	// TODO: handle duplicate fields
+	_, err := collection.InsertOne(ctx, module)
+	if err != nil {
+		return models.Module{}, err
+	}
+
+	return module, nil
 }
 
 func (r mongoRepository) getModulesCollection() *mongo.Collection {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"os"
 
 	"github.com/dgrijalva/jwt-go"
@@ -40,8 +39,6 @@ func NewAuthorizer(authRepository repository.Repository, tokenSigningMethod jwt.
 // Validate validates
 func (a authorizer) Validate(ctx context.Context, token string, resource string, action string) (bool, error) {
 	authToken, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
-		fmt.Println(t.Method)
-
 		if t.Method.Alg() != a.signingMethod.Alg() {
 			return nil, ErrInvalidTokenSigningMethod
 		}

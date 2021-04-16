@@ -1,7 +1,6 @@
 package router
 
 import (
-	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -10,17 +9,19 @@ import (
 func TestGetResourceFromURL(t *testing.T) {
 	c := require.New(t)
 
-	url, err := url.Parse("/modules")
-	c.Nil(err)
-
-	resource, err := getResourceFromURL(*url)
+	resource, err := getResourceFromEndpoint(Endpoint{Path: "/modules"})
 	c.Nil(err)
 	c.Equal("modules", resource)
 
-	url, err = url.Parse("/something/modules")
+	resource, err = getResourceFromEndpoint(Endpoint{Path: "/something/modules"})
 	c.Nil(err)
+	c.Equal("modules", resource)
 
-	resource, err = getResourceFromURL(*url)
+	resource, err = getResourceFromEndpoint(Endpoint{Path: "/modules/{id}"})
+	c.Nil(err)
+	c.Equal("modules", resource)
+
+	resource, err = getResourceFromEndpoint(Endpoint{Path: "/rivers/{id}/modules/{id}"})
 	c.Nil(err)
 	c.Equal("modules", resource)
 }

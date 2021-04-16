@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/flussrd/fluss-back/app/river-management/models"
 	repository "github.com/flussrd/fluss-back/app/river-management/repositories/rivers"
@@ -26,15 +27,19 @@ func New(client *mongo.Client) repository.Repository {
 }
 
 // SaveRiver saves a river on the database
-func (r mongoRepository) SaveRiver(ctx context.Context, river models.River) error {
+func (r mongoRepository) SaveRiver(ctx context.Context, river models.River) (models.River, error) {
 	riversCollection := r.getRiversCollection()
 
+	river.CreationDate = time.Now()
+	river.UpdateDate = time.Now()
+
+	// TODO: handle duplicate fields
 	_, err := riversCollection.InsertOne(ctx, river)
 	if err != nil {
-		return err
+		return models.River{}, err
 	}
 
-	return nil
+	return river, nil
 }
 
 // GetRiver finds a river on the database based in the id

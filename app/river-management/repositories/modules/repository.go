@@ -19,5 +19,5 @@ type Repository interface {
 	GetAllModules(ctx context.Context) ([]models.Module, string, error)
 	GetModulesByRiverWithoutPagination(ctx context.Context, riverID string) ([]models.Module, error)
 	GetModulesByRiver(ctx context.Context) ([]models.Module, string, error)
-	SaveModule(ctx context.Context, module models.Module) error
+	SaveModule(ctx context.Context, module models.Module) (models.Module, error)
 }
