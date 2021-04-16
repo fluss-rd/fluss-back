@@ -15,5 +15,5 @@ type River struct {
 // Location location of the entity
 type Location struct {
 	Lat float64 `json:"latitude" bson:"latitude"`
-	Lng float64 `json:"longitude" bson:"latitude"`
+	Lng float64 `json:"longitude" bson:"longitude"`
 }
