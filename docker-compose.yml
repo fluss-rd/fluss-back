@@ -11,6 +11,15 @@ services:
       - "5000:5000"
     depends_on:
       - db
+  river-management:
+    environment:
+      MONGO_URL: mongodb://db:27017/test
+      CONFIG_FILE: app/api-gateway/config/config.yml
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.river-management
+    depends_on:
+      - db
   accounts:
     environment:
       CONFIG_FILE: app/accounts/config/config.yml
