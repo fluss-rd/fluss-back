@@ -18,6 +18,7 @@ var (
 	ErrInvalidBody = httputils.NewBadRequestError("invalid request body")
 )
 
+// HTTPHandler defines the methods that will handle the incoming http requests
 type HTTPHandler interface {
 	HandleCreateRiver(ctx context.Context) http.HandlerFunc
 	HandleGetRivers(ctx context.Context) http.HandlerFunc
@@ -31,12 +32,14 @@ type httpHandler struct {
 	s service.Service
 }
 
-func NewHttpHandler(s service.Service) HTTPHandler {
+// NewHTTPHandler returns a new httpHandler entity that will handle requests
+func NewHTTPHandler(s service.Service) HTTPHandler {
 	return httpHandler{
 		s: s,
 	}
 }
 
+// HandleCreateRiver handles the create river http request
 func (h httpHandler) HandleCreateRiver(ctx context.Context) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		err := validateContentType(*r)
@@ -62,6 +65,7 @@ func (h httpHandler) HandleCreateRiver(ctx context.Context) http.HandlerFunc {
 	}
 }
 
+// HandleGetRivers handles the get rivers http request
 func (h httpHandler) HandleGetRivers(ctx context.Context) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		rivers, err := h.s.GetRiversN(ctx)
@@ -74,6 +78,7 @@ func (h httpHandler) HandleGetRivers(ctx context.Context) http.HandlerFunc {
 	}
 }
 
+// HandleCreateModule handles the create module http request
 func (h httpHandler) HandleCreateModule(ctx context.Context) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		err := validateContentType(*r)
@@ -99,6 +104,7 @@ func (h httpHandler) HandleCreateModule(ctx context.Context) http.HandlerFunc {
 	}
 }
 
+// HandleGetModule handle get module handles the get module http request
 func (h httpHandler) HandleGetModule(ctx context.Context) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		params := mux.Vars(r)
@@ -114,6 +120,7 @@ func (h httpHandler) HandleGetModule(ctx context.Context) http.HandlerFunc {
 	}
 }
 
+// HandleGetModules handles the GET modules http request
 func (h httpHandler) HandleGetModules(ctx context.Context) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		modules, err := h.s.GetModulesN(ctx)
