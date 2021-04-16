@@ -33,6 +33,7 @@ func (r mongoRepository) SaveRiver(ctx context.Context, river models.River) (mod
 	river.CreationDate = time.Now()
 	river.UpdateDate = time.Now()
 
+	// TODO: handle duplicate fields
 	_, err := riversCollection.InsertOne(ctx, river)
 	if err != nil {
 		return models.River{}, err

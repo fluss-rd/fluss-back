@@ -120,10 +120,11 @@ func (s service) CreateModule(ctx context.Context, module models.Module) (models
 
 	module.ModuleID = id
 
-	return module, nil
+	return s.modulesRepo.SaveModule(ctx, module)
 }
 
 func validateCreateModuleFields(module models.Module) error {
+	// TODO: add validation for this to be a real phone number(regex)
 	if module.PhoneNumber == "" {
 		return ErrMissingPhoneNumber
 	}
@@ -144,9 +145,13 @@ func (s service) GetModule(ctx context.Context, moduleID string) (models.Module,
 		return models.Module{}, ErrMissingModuleID
 	}
 
-	module, err := s.GetModule(ctx, moduleID)
+	module, err := s.modulesRepo.GetModule(ctx, moduleID)
 	if errors.Is(err, modulesRepository.ErrNotFound) {
 		return models.Module{}, httputils.NewNotFoundError("module")
+	}
+
+	if err != nil {
+		return models.Module{}, err
 	}
 
 	return module, nil

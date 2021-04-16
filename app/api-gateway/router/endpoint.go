@@ -9,7 +9,9 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/flussrd/fluss-back/app/accounts/shared/httputils"
+	"github.com/flussrd/fluss-back/app/api-gateway/authorization"
 	authRepo "github.com/flussrd/fluss-back/app/api-gateway/repositories/auth"
 	"github.com/gorilla/mux"
 )
@@ -159,34 +161,34 @@ func getToken(r http.Request) (string, error) {
 
 func authMiddleware(ctx context.Context, endpoint Endpoint, handler http.HandlerFunc, repo authRepo.Repository) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
-		// token, err := getToken(*r)
-		// if err != nil {
-		// 	httputils.RespondWithError(rw, err)
-		// 	return
-		// }
+		token, err := getToken(*r)
+		if err != nil {
+			httputils.RespondWithError(rw, err)
+			return
+		}
 
-		// resource, err := getResourceFromEndpoint(endpoint)
-		// if err != nil {
-		// 	httputils.RespondWithError(rw, err)
-		// 	return
-		// }
+		resource, err := getResourceFromEndpoint(endpoint)
+		if err != nil {
+			httputils.RespondWithError(rw, err)
+			return
+		}
 
-		// action, err := getActionFromMethod(r.Method)
-		// if err != nil {
-		// 	httputils.RespondWithError(rw, err)
-		// 	return
-		// }
+		action, err := getActionFromMethod(r.Method)
+		if err != nil {
+			httputils.RespondWithError(rw, err)
+			return
+		}
 
-		// authorizer := authorization.NewAuthorizer(repo, jwt.SigningMethodHS256)
+		authorizer := authorization.NewAuthorizer(repo, jwt.SigningMethodHS256)
 
-		// // TODO: handle error, this can be a reason to return 500
-		// isAuthorized, _ := authorizer.Validate(ctx, token, resource, action)
-		// if !isAuthorized {
-		// 	// TODO: make this beautiful
-		// 	httputils.RespondWithError(rw, httputils.ForbiddenError)
+		// TODO: handle error, this can be a reason to return 500
+		isAuthorized, _ := authorizer.Validate(ctx, token, resource, action)
+		if !isAuthorized {
+			// TODO: make this beautiful
+			httputils.RespondWithError(rw, httputils.ForbiddenError)
 
-		// 	return
-		// }
+			return
+		}
 
 		handler.ServeHTTP(rw, r)
 	}

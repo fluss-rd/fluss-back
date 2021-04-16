@@ -12,6 +12,7 @@ import (
 	"github.com/flussrd/fluss-back/app/api-gateway/router"
 	gorillaHandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/subosito/gotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -61,11 +62,32 @@ var endpoints = []router.Endpoint{
 		Method:     http.MethodGet,
 		Authorized: true,
 	},
+	{
+		Path:       "/modules",
+		RemotePath: "/modules",
+		RemotHost:  "http://river-management:5000",
+		Method:     http.MethodGet,
+		Authorized: true,
+	},
+	{
+		Path:       "/modules",
+		RemotePath: "/modules",
+		RemotHost:  "http://river-management:5000",
+		Method:     http.MethodPost,
+		Authorized: true,
+	},
+	{
+		Path:       `/modules/{id}`,
+		RemotePath: `/modules/{id}`,
+		RemotHost:  "http://river-management:5000",
+		Method:     http.MethodGet,
+		Authorized: true,
+	},
 }
 
-// func init() {
-// 	_ = gotenv.Load()
-// }
+func init() {
+	_ = gotenv.Load()
+}
 
 func main() {
 	config, err := config.GetConfig(os.Getenv("CONFIG_FILE"))
