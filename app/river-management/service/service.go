@@ -13,16 +13,25 @@ import (
 )
 
 var (
-	ErrMissingName        = httputils.NewBadRequestError("missing name")
-	ErrMissingUserID      = httputils.NewBadRequestError("missing user id")
-	ErrMissingLatitude    = httputils.NewBadRequestError("missing latitude")
-	ErrMissingLongitude   = httputils.NewBadRequestError("missing longitude")
+	// ErrMissingName missing name
+	ErrMissingName = httputils.NewBadRequestError("missing name")
+	// ErrMissingUserID missing user id
+	ErrMissingUserID = httputils.NewBadRequestError("missing user id")
+	// ErrMissingLatitude missing latitude
+	ErrMissingLatitude = httputils.NewBadRequestError("missing latitude")
+	// ErrMissingLongitude missing longitude
+	ErrMissingLongitude = httputils.NewBadRequestError("missing longitude")
+	// ErrMissingPhoneNumber missing phone number
 	ErrMissingPhoneNumber = httputils.NewBadRequestError("missing phone number")
-	ErrMissingRiverID     = httputils.NewBadRequestError("missing river id")
-	ErrMissingModuleID    = httputils.NewBadRequestError("missing module id")
+	// ErrMissingRiverID missing river id
+	ErrMissingRiverID = httputils.NewBadRequestError("missing river id")
+	// ErrMissingModuleID missing module id
+	ErrMissingModuleID = httputils.NewBadRequestError("missing module id")
 
+	// ErrGeneratingIDFailed generating id failed
 	ErrGeneratingIDFailed = errors.New("generating id failed")
-	ErrSavingRiverFailed  = errors.New("saving river failed")
+	// ErrSavingRiverFailed saving river failed
+	ErrSavingRiverFailed = errors.New("saving river failed")
 )
 
 type service struct {
