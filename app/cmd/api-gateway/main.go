@@ -10,6 +10,7 @@ import (
 	"github.com/flussrd/fluss-back/app/accounts/config"
 	repository "github.com/flussrd/fluss-back/app/api-gateway/repositories/auth/mongo"
 	"github.com/flussrd/fluss-back/app/api-gateway/router"
+	"github.com/gorilla/handlers"
 	gorillaHandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/subosito/gotenv"
@@ -123,7 +124,13 @@ func main() {
 	loggedRouter := gorillaHandlers.LoggingHandler(os.Stdout, handler)
 
 	fmt.Println("Listening...")
-	err = http.ListenAndServe(":5000", loggedRouter)
+
+	// TODO: handle the cors as it should be, this is temporal
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+
+	err = http.ListenAndServe(":5000", handlers.CORS(originsOk, headersOk, methodsOk)(loggedRouter))
 	if err != nil {
 		log.Fatal("listeting_starting_failed: " + err.Error())
 	}
