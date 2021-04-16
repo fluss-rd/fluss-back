@@ -50,7 +50,7 @@ func New(riversRepo riversRepository.Repository, modulesRepo modulesRepository.R
 func (s service) CreateRiver(ctx context.Context, river models.River) (models.River, error) {
 	err := validateCreateRiverFields(river)
 	if err != nil {
-		return models.River{}, nil
+		return models.River{}, err
 	}
 
 	id, err := utils.GenerateID("RVR")
@@ -62,7 +62,7 @@ func (s service) CreateRiver(ctx context.Context, river models.River) (models.Ri
 
 	river.RiverID = id
 
-	err = s.riversRepo.SaveRiver(ctx, river)
+	river, err = s.riversRepo.SaveRiver(ctx, river)
 	if err != nil {
 		return models.River{}, fmt.Errorf("%w: %s", ErrSavingRiverFailed, err.Error())
 	}
