@@ -9,9 +9,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/flussrd/fluss-back/app/accounts/shared/httputils"
-	"github.com/flussrd/fluss-back/app/api-gateway/authorization"
 	authRepo "github.com/flussrd/fluss-back/app/api-gateway/repositories/auth"
 	"github.com/gorilla/mux"
 )
@@ -78,19 +76,12 @@ func (r *router) generateRoutes(ctx context.Context) error {
 			return fmt.Errorf("%w: %s", ErrParseURLFailed, err.Error())
 		}
 
-		remoteHostURL, err := url.Parse(endpoint.RemotHost)
-		if err != nil {
-			return fmt.Errorf("%w: %s", ErrParseURLFailed, err.Error())
-		}
-
-		proxy := httputil.NewSingleHostReverseProxy(remoteHostURL)
-
 		if endpoint.Authorized {
-			r.handler.Handle(endpoint.Path, authMiddleware(ctx, handleRequest(proxy, remoteURL), r.authRepo)).Methods(endpoint.Method)
+			r.handler.Handle(endpoint.Path, authMiddleware(ctx, endpoint, handleRequest(endpoint, remoteURL), r.authRepo)).Methods(endpoint.Method)
 			continue
 		}
 
-		r.handler.Handle(endpoint.Path, handleRequest(proxy, remoteURL)).Methods(endpoint.Method)
+		r.handler.Handle(endpoint.Path, handleRequest(endpoint, remoteURL)).Methods(endpoint.Method)
 	}
 
 	return nil
@@ -98,16 +89,55 @@ func (r *router) generateRoutes(ctx context.Context) error {
 
 func modifyRequest(r *http.Request, remoteURL *url.URL) {
 	// Update the headers to allow for SSL redirection
-	fmt.Println(remoteURL)
 	r.URL.Host = remoteURL.Host
 	r.URL.Scheme = remoteURL.Scheme
-	r.URL.Path = remoteURL.Path
+	r.URL.Path = remoteURL.Path // we need this to come from the endpoint to not have
 	r.Header.Set("X-Forwarded-Host", r.Host)
 	r.Host = remoteURL.Host
 }
 
-func handleRequest(proxy *httputil.ReverseProxy, remoteURL *url.URL) http.HandlerFunc {
+func getProxy(url *url.URL) (*httputil.ReverseProxy, error) {
+	return httputil.NewSingleHostReverseProxy(url), nil
+}
+
+func getActualURL(endpoint Endpoint, vars map[string]string) (*url.URL, error) {
+	wholeRemoteEndpoint := endpoint.RemotHost + endpoint.RemotePath
+
+	for k, v := range vars {
+		wholeRemoteEndpoint = strings.ReplaceAll(wholeRemoteEndpoint, fmt.Sprintf("{%s}", k), v)
+	}
+
+	url, err := url.Parse(wholeRemoteEndpoint)
+	if err != nil {
+		return nil, err
+	}
+
+	return url, nil
+}
+
+func handleRequest(endpoint Endpoint, remoteURL *url.URL) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
+		remoteURL, err := getActualURL(endpoint, mux.Vars(r))
+		if err != nil {
+			fmt.Println("failed to get url: " + err.Error())
+			httputils.RespondInternalServerError(rw)
+			return
+		}
+
+		remoteHostURL, err := url.Parse(endpoint.RemotHost)
+		if err != nil {
+			fmt.Println("failed to get url: " + err.Error())
+			httputils.RespondInternalServerError(rw)
+			return
+		}
+
+		proxy, err := getProxy(remoteHostURL)
+		if err != nil {
+			fmt.Println("failed to get proxy: " + err.Error())
+			httputils.RespondInternalServerError(rw)
+			return
+		}
+
 		modifyRequest(r, remoteURL)
 		proxy.ServeHTTP(rw, r)
 	}
@@ -127,45 +157,44 @@ func getToken(r http.Request) (string, error) {
 	return splittedToken[1], nil
 }
 
-func authMiddleware(ctx context.Context, handler http.HandlerFunc, repo authRepo.Repository) http.HandlerFunc {
+func authMiddleware(ctx context.Context, endpoint Endpoint, handler http.HandlerFunc, repo authRepo.Repository) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
-		token, err := getToken(*r)
-		if err != nil {
-			httputils.RespondWithError(rw, err)
-			return
-		}
+		// token, err := getToken(*r)
+		// if err != nil {
+		// 	httputils.RespondWithError(rw, err)
+		// 	return
+		// }
 
-		resource, err := getResourceFromURL(*r.URL)
-		if err != nil {
-			httputils.RespondWithError(rw, err)
-			return
-		}
+		// resource, err := getResourceFromEndpoint(endpoint)
+		// if err != nil {
+		// 	httputils.RespondWithError(rw, err)
+		// 	return
+		// }
 
-		action, err := getActionFromMethod(r.Method)
-		if err != nil {
-			httputils.RespondWithError(rw, err)
-			return
-		}
+		// action, err := getActionFromMethod(r.Method)
+		// if err != nil {
+		// 	httputils.RespondWithError(rw, err)
+		// 	return
+		// }
 
-		authorizer := authorization.NewAuthorizer(repo, jwt.SigningMethodHS256)
+		// authorizer := authorization.NewAuthorizer(repo, jwt.SigningMethodHS256)
 
-		// TODO: handle error, this can be a reason to return 500
-		isAuthorized, _ := authorizer.Validate(ctx, token, resource, action)
-		if !isAuthorized {
-			// TODO: make this beautiful
-			httputils.RespondWithError(rw, httputils.ForbiddenError)
+		// // TODO: handle error, this can be a reason to return 500
+		// isAuthorized, _ := authorizer.Validate(ctx, token, resource, action)
+		// if !isAuthorized {
+		// 	// TODO: make this beautiful
+		// 	httputils.RespondWithError(rw, httputils.ForbiddenError)
 
-			return
-		}
+		// 	return
+		// }
 
 		handler.ServeHTTP(rw, r)
 	}
 }
 
-func getResourceFromURL(url url.URL) (string, error) {
-	splitted := strings.Split(url.String(), "/")
+func getResourceFromEndpoint(endpoint Endpoint) (string, error) {
+	splitted := strings.Split(endpoint.Path, "/")
 	// TODO: handle when this is of unexpected length
-
 	// If the last part of the path contais a {, that means is a variable like : modules/{id}, so we should return the one before that
 	if strings.Contains(splitted[len(splitted)-1], "{") {
 		return splitted[len(splitted)-2], nil
