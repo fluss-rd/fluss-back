@@ -79,7 +79,7 @@ func TestCreaterole(t *testing.T) {
 		Permissions: []models.Permission{
 			{
 				Resource: "modules",
-				Action:   "*",
+				Actions:  []models.ActionType{"*"},
 			},
 		},
 	}
@@ -106,7 +106,7 @@ func TestUpdateRole(t *testing.T) {
 		Permissions: []models.Permission{
 			{
 				Resource: "modules",
-				Action:   "*",
+				Actions:  []models.ActionType{"*"},
 			},
 		},
 	})

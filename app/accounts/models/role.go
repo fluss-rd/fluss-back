@@ -39,5 +39,5 @@ type Permission struct {
 	// Resource resource to be accesible on the permission
 	Resource ResourceType `json:"resource" bson:"resource"`
 	// Action action to be done or performed on the resource
-	Action ActionType `json:"action" bson:"action"`
+	Actions []ActionType `json:"actions" bson:"actions"`
 }

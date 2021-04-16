@@ -169,7 +169,7 @@ func validateCreateRoleParams(role models.Role) error {
 	}
 
 	for _, permission := range role.Permissions {
-		if permission.Action == "" {
+		if len(permission.Actions) == 0 {
 			return ErrMissingActionInPermission
 		}
 
