@@ -56,6 +56,10 @@ func (h httpHandler) HandleCreateRiver(ctx context.Context) http.HandlerFunc {
 			return
 		}
 
+		sub := r.Header.Get("sub")
+		// TODO: check if empty
+		river.UserID = sub
+
 		river, err = h.s.CreateRiver(ctx, river)
 		if err != nil {
 			fmt.Println("creating_river_failed: " + err.Error())
@@ -95,6 +99,10 @@ func (h httpHandler) HandleCreateModule(ctx context.Context) http.HandlerFunc {
 			httputils.RespondWithError(rw, ErrInvalidBody)
 			return
 		}
+
+		sub := r.Header.Get("sub")
+		// TODO check if empty
+		module.UserID = sub
 
 		module, err = h.s.CreateModule(ctx, module)
 		if err != nil {

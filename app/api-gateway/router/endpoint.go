@@ -182,13 +182,13 @@ func authMiddleware(ctx context.Context, endpoint Endpoint, handler http.Handler
 		authorizer := authorization.NewAuthorizer(repo, jwt.SigningMethodHS256)
 
 		// TODO: handle error, this can be a reason to return 500
-		isAuthorized, _ := authorizer.Validate(ctx, token, resource, action)
+		isAuthorized, sub, _ := authorizer.Validate(ctx, token, resource, action)
 		if !isAuthorized {
-			// TODO: make this beautiful
 			httputils.RespondWithError(rw, httputils.ForbiddenError)
-
 			return
 		}
+
+		r.Header["sub"] = []string{sub}
 
 		handler.ServeHTTP(rw, r)
 	}

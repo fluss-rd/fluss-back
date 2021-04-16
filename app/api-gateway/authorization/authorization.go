@@ -23,7 +23,7 @@ type claims struct {
 
 // Authorizer defines the authorization methods
 type Authorizer interface {
-	Validate(ctx context.Context, token, resource, action string) (bool, error)
+	Validate(ctx context.Context, token, resource, action string) (bool, string, error)
 }
 
 type authorizer struct {
@@ -37,7 +37,7 @@ func NewAuthorizer(authRepository repository.Repository, tokenSigningMethod jwt.
 }
 
 // Validate validates
-func (a authorizer) Validate(ctx context.Context, token string, resource string, action string) (bool, error) {
+func (a authorizer) Validate(ctx context.Context, token string, resource string, action string) (bool, string, error) {
 	authToken, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
 		if t.Method.Alg() != a.signingMethod.Alg() {
 			return nil, ErrInvalidTokenSigningMethod
@@ -47,25 +47,25 @@ func (a authorizer) Validate(ctx context.Context, token string, resource string,
 	})
 
 	if err != nil {
-		return false, err
+		return false, "", err
 	}
 
 	if !authToken.Valid {
-		return false, nil
+		return false, "", nil
 	}
 
 	tokenClaims, err := getTokenClaims(authToken)
 	if err != nil {
-		return false, err
+		return false, "", err
 	}
 
 	// TODO: validate claims has the requried fields
 	role, err := a.getRole(ctx, tokenClaims)
 	if err != nil {
-		return false, err
+		return false, "", err
 	}
 
-	return checkPermissions(role, resource, action), nil
+	return checkPermissions(role, resource, action), tokenClaims.Sub, nil
 }
 
 func checkPermissions(role models.Role, resource string, action string) bool {
