@@ -46,6 +46,21 @@ var endpoints = []router.Endpoint{
 		Method:     http.MethodPost,
 		Authorized: true,
 	},
+	// river-management
+	{
+		Path:       "/rivers",
+		RemotePath: "/rivers",
+		RemotHost:  "http://river-management:5000",
+		Method:     http.MethodPost,
+		Authorized: true,
+	},
+	{
+		Path:       "/rivers",
+		RemotePath: "/rivers",
+		RemotHost:  "http://river-management:5000",
+		Method:     http.MethodGet,
+		Authorized: true,
+	},
 }
 
 // func init() {
