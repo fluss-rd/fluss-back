@@ -166,6 +166,11 @@ func getResourceFromURL(url url.URL) (string, error) {
 	splitted := strings.Split(url.String(), "/")
 	// TODO: handle when this is of unexpected length
 
+	// If the last part of the path contais a {, that means is a variable like : modules/{id}, so we should return the one before that
+	if strings.Contains(splitted[len(splitted)-1], "{") {
+		return splitted[len(splitted)-2], nil
+	}
+
 	return splitted[len(splitted)-1], nil
 }
 
