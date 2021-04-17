@@ -215,7 +215,7 @@ func (s service) Login(ctx context.Context, email string, password string) (Logi
 		return LoginResponse{}, err
 	}
 
-	return LoginResponse{Token: token}, nil
+	return LoginResponse{Token: token, UserID: user.UserID}, nil
 }
 
 func generateToken(user models.User) (string, error) {
