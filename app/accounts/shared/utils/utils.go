@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"strings"
 
 	"github.com/gofrs/uuid"
@@ -14,4 +15,16 @@ func GenerateID(prefix string) (string, error) {
 	}
 
 	return prefix + strings.ReplaceAll(id.String(), "-", ""), nil
+}
+
+// Converts a struct to a map while maintaining the json alias as keys
+func StructToMap(obj interface{}) (newMap map[string]interface{}, err error) {
+	data, err := json.Marshal(obj) // Convert to a json string
+
+	if err != nil {
+		return
+	}
+
+	err = json.Unmarshal(data, &newMap) // Convert to a map
+	return
 }

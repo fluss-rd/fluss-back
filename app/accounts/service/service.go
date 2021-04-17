@@ -48,11 +48,24 @@ var (
 	ErrMissingResourceInPermission = httputils.NewBadRequestError("missing resource in permission")
 	// ErrInvalidCredentials invalid credentials
 	ErrInvalidCredentials = httputils.ErrorResponse{Code: http.StatusUnauthorized, Message: "invalid credentials"}
+
+	// ErrMissingPatchOperation missing patch operation
+	ErrMissingPatchOperation = httputils.NewBadRequestError("missing patch operation")
+	// ErrMissingPatchPath missing patch path
+	ErrMissingPatchPath = httputils.NewBadRequestError("missing patch operation")
+	// ErrMissingPatchValue missing patch value
+	ErrMissingPatchValue = httputils.NewBadRequestError("missing patch value")
 )
 
 var (
 	generatePasswordHashFunction func(password []byte, cost int) ([]byte, error)
 	generateIDFunction           func(prefix string) (string, error)
+
+	userUpdatableFields = map[string]bool{
+		"email":    true,
+		"name":     true,
+		"password": true,
+	}
 )
 
 func init() {
@@ -181,6 +194,81 @@ func validateCreateRoleParams(role models.Role) error {
 	}
 
 	return nil
+}
+
+func (s service) UpdateUser(ctx context.Context, request httputils.PatchRequest, userID string) (models.User, error) {
+	// TODO: move to another function
+	for _, operation := range request {
+		if operation.Op == "" {
+			return models.User{}, ErrMissingPatchOperation
+		}
+
+		if operation.Path == "" {
+			return models.User{}, ErrMissingPatchPath
+		}
+
+		if operation.Value == "" {
+			return models.User{}, ErrMissingPatchValue
+		}
+
+		if operation.Op != "update" {
+			return models.User{}, httputils.NewBadRequestError("invalid patch operation: " + operation.Op)
+		}
+
+		// TODO: handle nested fields
+		if !userUpdatableFields[operation.Path] {
+			return models.User{}, httputils.NewBadRequestError("invalid patch path: " + operation.Path)
+		}
+	}
+
+	user := models.User{}
+	user.UserID = userID
+
+	for _, operation := range request {
+		switch operation.Path {
+		case "name":
+			name, ok := operation.Value.(string)
+			if !ok {
+				return models.User{}, httputils.NewBadRequestError("invalid patch value: name")
+			}
+
+			user.Name = name
+		case "email":
+			email, ok := operation.Value.(string)
+			if !ok {
+				return models.User{}, httputils.NewBadRequestError("invalid patch value: email")
+			}
+
+			user.Email = email
+		case "password":
+			password, ok := operation.Value.(string)
+			if !ok {
+				return models.User{}, httputils.NewBadRequestError("invalid patch value: email")
+			}
+
+			hashedPassword, err := generatePasswordHashFunction([]byte(password), bcrypt.DefaultCost)
+			if err != nil {
+				return models.User{}, ErrPasswordHashingFailed
+			}
+
+			user.Password = string(hashedPassword)
+		default:
+			return models.User{}, httputils.NewBadRequestError("invalid patch path: " + operation.Path)
+		}
+	}
+
+	_, err := s.usersRepo.UpdateUser(ctx, user)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	// TODO: this is temporary, we are making two requests to the database by doing this
+	user, err = s.usersRepo.GetUser(ctx, userID)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
 }
 
 // UpdateRole updates a role
