@@ -14,7 +14,7 @@ db.roles.insert({
     permissions: [
         {
             resource: "*",
-            action: "*",
+            actions: ["*"],
         }
     ]
 });
