@@ -169,10 +169,12 @@ func validateCreateRoleParams(role models.Role) error {
 	}
 
 	for _, permission := range role.Permissions {
+		// TODO: validate the actions are valid actions
 		if len(permission.Actions) == 0 {
 			return ErrMissingActionInPermission
 		}
 
+		// TODO: Validate this is a valid resource as well
 		if permission.Resource == "" {
 			return ErrMissingResourceInPermission
 		}
