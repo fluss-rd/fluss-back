@@ -169,10 +169,12 @@ func validateCreateRoleParams(role models.Role) error {
 	}
 
 	for _, permission := range role.Permissions {
-		if permission.Action == "" {
+		// TODO: validate the actions are valid actions
+		if len(permission.Actions) == 0 {
 			return ErrMissingActionInPermission
 		}
 
+		// TODO: Validate this is a valid resource as well
 		if permission.Resource == "" {
 			return ErrMissingResourceInPermission
 		}
@@ -213,7 +215,7 @@ func (s service) Login(ctx context.Context, email string, password string) (Logi
 		return LoginResponse{}, err
 	}
 
-	return LoginResponse{Token: token}, nil
+	return LoginResponse{Token: token, UserID: user.UserID}, nil
 }
 
 func generateToken(user models.User) (string, error) {

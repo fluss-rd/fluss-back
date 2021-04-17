@@ -68,10 +68,12 @@ func (a authorizer) Validate(ctx context.Context, token string, resource string,
 	return checkPermissions(role, resource, action), tokenClaims.Sub, nil
 }
 
-func checkPermissions(role models.Role, resource string, action string) bool {
+func checkPermissions(role models.Role, resource string, desiredAction string) bool {
 	for _, permission := range role.Permissions {
-		if (string(permission.Resource) == resource || permission.Resource == "*") && (string(permission.Action) == action || permission.Action == "*") {
-			return true
+		for _, action := range permission.Actions {
+			if (string(permission.Resource) == resource || permission.Resource == "*") && (string(action) == desiredAction || action == "*") {
+				return true
+			}
 		}
 	}
 
