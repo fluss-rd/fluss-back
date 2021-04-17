@@ -9,6 +9,7 @@ import (
 	"github.com/flussrd/fluss-back/app/accounts/models"
 	"github.com/flussrd/fluss-back/app/accounts/service"
 	"github.com/flussrd/fluss-back/app/accounts/shared/httputils"
+	"github.com/gorilla/mux"
 )
 
 var (
@@ -21,6 +22,7 @@ var (
 // HTTPHandler defines the functiosn that will handle http requests
 type HTTPHandler interface {
 	HandleCreateUser(ctx context.Context) http.HandlerFunc
+	HandleUpdateUser(ctx context.Context) http.HandlerFunc
 	HandleCreateRole(ctx context.Context) http.HandlerFunc
 	HandleGetRoles(ctx context.Context) http.HandlerFunc
 	HandleLogin(ctx context.Context) http.HandlerFunc
@@ -61,6 +63,36 @@ func (h httpHandler) HandleCreateUser(ctx context.Context) http.HandlerFunc {
 		}
 
 		httputils.RespondJSON(rw, http.StatusCreated, user)
+	}
+}
+
+func (h httpHandler) HandleUpdateUser(ctx context.Context) http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		// TODO: handle this being empty
+		userID := vars["id"]
+
+		err := validateContentType(*r)
+		if err != nil {
+			httputils.RespondWithError(rw, err)
+			return
+		}
+
+		patchRequest := httputils.PatchRequest{}
+		err = json.NewDecoder(r.Body).Decode(&patchRequest)
+		if err != nil {
+			httputils.RespondWithError(rw, ErrInvalidBody)
+			return
+		}
+
+		user, err := h.service.UpdateUser(ctx, patchRequest, userID)
+		if err != nil {
+			httputils.RespondWithError(rw, err)
+			return
+		}
+
+		httputils.RespondJSON(rw, http.StatusOK, user)
 	}
 }
 
