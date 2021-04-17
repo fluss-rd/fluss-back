@@ -88,6 +88,7 @@ func (h httpHandler) HandleUpdateUser(ctx context.Context) http.HandlerFunc {
 
 		user, err := h.service.UpdateUser(ctx, patchRequest, userID)
 		if err != nil {
+			fmt.Println("updating_user_failed: " + err.Error())
 			httputils.RespondWithError(rw, err)
 			return
 		}

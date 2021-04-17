@@ -41,11 +41,19 @@ var endpoints = []router.Endpoint{
 		Method:     http.MethodGet,
 		Authorized: true,
 	},
+	// TODO: there's an inconsistency between api and services endpoints(plural/singular)
 	{
 		Path:       "/account/users",
-		RemotePath: "/role",
+		RemotePath: "/user",
 		RemotHost:  "http://accounts:5000",
 		Method:     http.MethodPost,
+		Authorized: true,
+	},
+	{
+		Path:       "/account/users/{id}",
+		RemotePath: "/user/{id}",
+		RemotHost:  "http://accounts:5000",
+		Method:     http.MethodPatch,
 		Authorized: true,
 	},
 	// river-management

@@ -106,6 +106,10 @@ func (repo MongoRepository) UpdateUser(ctx context.Context, user models.User) (m
 		return models.User{}, repository.ErrMissingUserID
 	}
 
+	if user.Name != "" {
+		updateFields["name"] = user.Name
+	}
+
 	if user.Email != "" {
 		updateFields["email"] = user.Email
 	}

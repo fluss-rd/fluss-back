@@ -52,9 +52,11 @@ var (
 	// ErrMissingPatchOperation missing patch operation
 	ErrMissingPatchOperation = httputils.NewBadRequestError("missing patch operation")
 	// ErrMissingPatchPath missing patch path
-	ErrMissingPatchPath = httputils.NewBadRequestError("missing patch operation")
+	ErrMissingPatchPath = httputils.NewBadRequestError("missing patch path")
 	// ErrMissingPatchValue missing patch value
 	ErrMissingPatchValue = httputils.NewBadRequestError("missing patch value")
+	// ErrNothingToUpdate nothing to update
+	ErrNothingToUpdate = httputils.NewBadRequestError("nothing to update")
 )
 
 var (
@@ -197,6 +199,10 @@ func validateCreateRoleParams(role models.Role) error {
 }
 
 func (s service) UpdateUser(ctx context.Context, request httputils.PatchRequest, userID string) (models.User, error) {
+	if len(request) == 0 {
+		return models.User{}, ErrNothingToUpdate
+	}
+
 	// TODO: move to another function
 	for _, operation := range request {
 		if operation.Op == "" {
@@ -258,6 +264,10 @@ func (s service) UpdateUser(ctx context.Context, request httputils.PatchRequest,
 	}
 
 	_, err := s.usersRepo.UpdateUser(ctx, user)
+	if errors.Is(err, usersRepository.ErrNothingToUpdate) {
+		return models.User{}, ErrNothingToUpdate
+	}
+
 	if err != nil {
 		return models.User{}, err
 	}
@@ -267,6 +277,8 @@ func (s service) UpdateUser(ctx context.Context, request httputils.PatchRequest,
 	if err != nil {
 		return models.User{}, err
 	}
+
+	user.Password = ""
 
 	return user, nil
 }
