@@ -4,12 +4,14 @@ import (
 	"context"
 
 	"github.com/flussrd/fluss-back/app/accounts/models"
+	"github.com/flussrd/fluss-back/app/accounts/shared/httputils"
 )
 
 // UserUseCase defines the usecases functions for the user
 type UserUseCase interface {
 	CreateUser(ctx context.Context, user models.User) (models.User, error)
 	AddRoleToUser(ctx context.Context, roleName string, userID string) error
+	UpdateUser(ctx context.Context, request httputils.PatchRequest, userID string) (models.User, error)
 }
 
 // RolesUseCase defines the usescases functions for the user

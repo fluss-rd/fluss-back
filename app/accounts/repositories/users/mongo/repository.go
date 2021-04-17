@@ -97,6 +97,44 @@ func (repo MongoRepository) AddRoleToUser(ctx context.Context, userID string, ro
 
 // UpdateUser updates a user on the database
 func (repo MongoRepository) UpdateUser(ctx context.Context, user models.User) (models.User, error) {
+	updateFields := bson.M{}
+
+	// TODO: research on standards on how to do this.
+	// My opinion is that the database layer should not be aware of which fields should be changed,
+	// as this might be a business requirement
+	if user.UserID == "" {
+		return models.User{}, repository.ErrMissingUserID
+	}
+
+	if user.Name != "" {
+		updateFields["name"] = user.Name
+	}
+
+	if user.Email != "" {
+		updateFields["email"] = user.Email
+	}
+
+	if user.Password != "" {
+		updateFields["password"] = user.Password
+	}
+
+	if len(updateFields) == 0 {
+		return models.User{}, repository.ErrNothingToUpdate
+	}
+
+	usersCollection := repo.getUsersCollection()
+
+	_, err := usersCollection.UpdateOne(ctx, bson.M{"_id": user.UserID}, bson.M{
+		"$set": updateFields,
+	})
+
+	// TODO: handle when id does not exits / no matches
+	if err != nil {
+		// TODO: wrap this
+		return models.User{}, err
+	}
+
+	// TODO: see how to retrieve the changed params
 	return models.User{}, nil
 }
 
