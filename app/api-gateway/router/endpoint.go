@@ -117,8 +117,19 @@ func getActualURL(endpoint Endpoint, vars map[string]string) (*url.URL, error) {
 	return url, nil
 }
 
+func setupPreflightResponse(w *http.ResponseWriter, req *http.Request) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, PATCH")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+}
+
 func handleRequest(endpoint Endpoint, remoteURL *url.URL) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodOptions {
+			setupPreflightResponse(&rw, r)
+			return
+		}
+
 		remoteURL, err := getActualURL(endpoint, mux.Vars(r))
 		if err != nil {
 			fmt.Println("failed to get url: " + err.Error())

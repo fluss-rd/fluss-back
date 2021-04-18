@@ -10,7 +10,6 @@ import (
 	"github.com/flussrd/fluss-back/app/accounts/config"
 	repository "github.com/flussrd/fluss-back/app/api-gateway/repositories/auth/mongo"
 	"github.com/flussrd/fluss-back/app/api-gateway/router"
-	"github.com/gorilla/handlers"
 	gorillaHandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/subosito/gotenv"
@@ -28,11 +27,25 @@ var endpoints = []router.Endpoint{
 		Authorized: false,
 	},
 	{
+		Path:       "/account/login",
+		RemotePath: "/login",
+		RemotHost:  "http://accounts:5000",
+		Method:     http.MethodOptions,
+		Authorized: false,
+	},
+	{
 		Path:       "/account/roles",
 		RemotePath: "/role",
 		RemotHost:  "http://accounts:5000",
 		Method:     http.MethodPost,
 		Authorized: true,
+	},
+	{
+		Path:       "/account/roles",
+		RemotePath: "/role",
+		RemotHost:  "http://accounts:5000",
+		Method:     http.MethodOptions,
+		Authorized: false,
 	},
 	{
 		Path:       "/account/roles",
@@ -48,6 +61,13 @@ var endpoints = []router.Endpoint{
 		RemotHost:  "http://accounts:5000",
 		Method:     http.MethodPost,
 		Authorized: true,
+	},
+	{
+		Path:       "/account/users",
+		RemotePath: "/user",
+		RemotHost:  "http://accounts:5000",
+		Method:     http.MethodOptions,
+		Authorized: false,
 	},
 	{
 		Path:       "/account/users/{id}",
@@ -68,6 +88,13 @@ var endpoints = []router.Endpoint{
 		Path:       "/rivers",
 		RemotePath: "/rivers",
 		RemotHost:  "http://river-management:5000",
+		Method:     http.MethodOptions,
+		Authorized: false,
+	},
+	{
+		Path:       "/rivers",
+		RemotePath: "/rivers",
+		RemotHost:  "http://river-management:5000",
 		Method:     http.MethodGet,
 		Authorized: true,
 	},
@@ -84,6 +111,13 @@ var endpoints = []router.Endpoint{
 		RemotHost:  "http://river-management:5000",
 		Method:     http.MethodPost,
 		Authorized: true,
+	},
+	{
+		Path:       "/modules",
+		RemotePath: "/modules",
+		RemotHost:  "http://river-management:5000",
+		Method:     http.MethodPatch,
+		Authorized: false,
 	},
 	{
 		Path:       `/modules/{id}`,
@@ -133,12 +167,7 @@ func main() {
 
 	fmt.Println("Listening...")
 
-	// TODO: handle the cors as it should be, this is temporal
-	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
-	originsOk := handlers.AllowedOrigins([]string{"*"})
-	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
-
-	err = http.ListenAndServe(":5000", handlers.CORS(originsOk, headersOk, methodsOk)(loggedRouter))
+	err = http.ListenAndServe(":5000", (loggedRouter))
 	if err != nil {
 		log.Fatal("listeting_starting_failed: " + err.Error())
 	}
