@@ -147,6 +147,13 @@ var endpoints = []router.Endpoint{
 		Method:     http.MethodGet,
 		Authorized: true,
 	},
+	{
+		Path:       `/modules/{id}`,
+		RemotePath: `/modules/{id}`,
+		RemotHost:  "http://river-management:5000",
+		Method:     http.MethodOptions,
+		Authorized: true,
+	},
 }
 
 func init() {
