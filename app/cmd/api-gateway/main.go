@@ -130,6 +130,13 @@ var endpoints = []router.Endpoint{
 		Path:       "/modules",
 		RemotePath: "/modules",
 		RemotHost:  "http://river-management:5000",
+		Method:     http.MethodOptions,
+		Authorized: true,
+	},
+	{
+		Path:       "/modules",
+		RemotePath: "/modules",
+		RemotHost:  "http://river-management:5000",
 		Method:     http.MethodPatch,
 		Authorized: false,
 	},
