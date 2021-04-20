@@ -26,9 +26,11 @@ type Module struct {
 	ModuleID     string      `json:"moduleID" bson:"_id"`
 	PhoneNumber  string      `json:"phoneNumber" bson:"phoneNumber"`
 	RiverID      string      `json:"riverID" bson:"riverID"`
+	RiverName    string      `json:"riverName" bson:"riverName"`
 	UserID       string      `json:"userID" bson:"userID"`
 	CreationDate time.Time   `json:"creationDate" bson:"creationDate"`
 	UpdateDate   time.Time   `json:"updateDate" bson:"updateDate"`
 	CurrentState ModuleState `json:"state" bson:"state"`
 	Serial       string      `json:"serial" bson:"serial"`
+	Location     Location    `json:"location" bson:"location"`
 }

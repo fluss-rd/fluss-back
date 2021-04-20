@@ -27,6 +27,8 @@ var (
 	ErrMissingRiverID = httputils.NewBadRequestError("missing river id")
 	// ErrMissingModuleID missing module id
 	ErrMissingModuleID = httputils.NewBadRequestError("missing module id")
+	// ErrInvalidRiver invalid river
+	ErrInvalidRiver = httputils.NewBadRequestError("invalid river")
 
 	// ErrGeneratingIDFailed generating id failed
 	ErrGeneratingIDFailed = errors.New("generating id failed")
@@ -109,6 +111,17 @@ func (s service) CreateModule(ctx context.Context, module models.Module) (models
 	if err != nil {
 		return models.Module{}, err
 	}
+
+	river, err := s.riversRepo.GetRiver(ctx, module.RiverID)
+	if errors.Is(err, riversRepository.ErrNotFound) {
+		return models.Module{}, ErrInvalidRiver
+	}
+
+	if err != nil {
+		return models.Module{}, err
+	}
+
+	module.RiverName = river.Name
 
 	// Modules become active as soon we receive the first data coming from the. Until then, the module is inactive
 	module.CurrentState = models.ModuleStateInactive
