@@ -3,6 +3,7 @@ package httphandler
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -26,6 +27,7 @@ type HTTPHandler interface {
 	HandleCreateRole(ctx context.Context) http.HandlerFunc
 	HandleGetRoles(ctx context.Context) http.HandlerFunc
 	HandleLogin(ctx context.Context) http.HandlerFunc
+	HandleGetUser(ctx context.Context) http.HandlerFunc
 }
 
 type httpHandler struct {
@@ -160,6 +162,26 @@ func (h httpHandler) HandleLogin(ctx context.Context) http.HandlerFunc {
 		}
 
 		httputils.RespondJSON(rw, http.StatusOK, response)
+	}
+}
+
+func (h httpHandler) HandleGetUser(ctx context.Context) http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		id, ok := vars["id"]
+
+		if !ok {
+			httputils.RespondWithError(rw, errors.New("missing id"))
+			return
+		}
+
+		user, err := h.service.GetUser(ctx, id)
+		if err != nil {
+			httputils.RespondWithError(rw, err)
+			return
+		}
+
+		httputils.RespondJSON(rw, http.StatusOK, user)
 	}
 }
 

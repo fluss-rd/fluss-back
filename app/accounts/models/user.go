@@ -8,7 +8,7 @@ type User struct {
 	PhoneNumber  string    `json:"phoneNumber" bson:"phoneNumber"`
 	Name         string    `json:"name" bson:"name"`
 	Email        string    `json:"email" bson:"email"`
-	Password     string    `json:"password" bson:"password"`
+	Password     string    `json:"password,omitempty" bson:"password"`
 	RoleName     string    `json:"roleName" bson:"roleName"`
 	CreationDate time.Time `json:"creationDate" bson:"creationDate"`
 	UpdateDate   time.Time `json:"updateDate" bson:"updateDate"`
