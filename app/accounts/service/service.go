@@ -294,6 +294,20 @@ func (s service) GetRoles(ctx context.Context) ([]models.Role, error) {
 	return s.rolesRepo.GetRoles(ctx)
 }
 
+func (s service) GetUser(ctx context.Context, userID string) (models.User, error) {
+	user, err := s.usersRepo.GetUser(ctx, userID)
+	if errors.Is(err, usersRepository.ErrNotFound) {
+		return models.User{}, httputils.NewNotFoundError("user")
+	}
+
+	if err != nil {
+		return models.User{}, err
+	}
+
+	user.Password = ""
+	return user, nil
+}
+
 // Login authenticates a user
 func (s service) Login(ctx context.Context, email string, password string) (LoginResponse, error) {
 	err := validateLoginInput(email, password)
