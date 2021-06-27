@@ -18,6 +18,8 @@ var (
 	ErrMissingContentType = httputils.NewBadRequestError("missing content type")
 	// ErrInvalidBody invalid request body
 	ErrInvalidBody = httputils.NewBadRequestError("invalid request body")
+	// ErrMissingID missing id
+	ErrMissingID = errors.New("missing id")
 )
 
 // HTTPHandler defines the functiosn that will handle http requests
@@ -72,8 +74,11 @@ func (h httpHandler) HandleUpdateUser(ctx context.Context) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		// TODO: handle this being empty
 		userID := vars["id"]
+		if userID == "" {
+			httputils.RespondWithError(rw, ErrMissingID)
+			return
+		}
 
 		err := validateContentType(*r)
 		if err != nil {

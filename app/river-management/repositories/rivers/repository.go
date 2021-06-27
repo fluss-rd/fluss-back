@@ -10,6 +10,8 @@ import (
 var (
 	// ErrNotFound not found
 	ErrNotFound = errors.New("not found")
+	// ErrDuplicateFields duplicate fields
+	ErrDuplicateFields = errors.New("duplicate fields")
 )
 
 // Repository defines the data-persistance methods for rivers

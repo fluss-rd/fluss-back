@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -17,6 +18,8 @@ var (
 	ErrMissingContentType = httputils.NewBadRequestError("missing content type")
 	// ErrInvalidBody invalid request body
 	ErrInvalidBody = httputils.NewBadRequestError("invalid request body")
+	// ErrMissingSub missing sub
+	ErrMissingSub = errors.New("missing sub")
 )
 
 // HTTPHandler defines the methods that will handle the incoming http requests
@@ -57,7 +60,11 @@ func (h httpHandler) HandleCreateRiver(ctx context.Context) http.HandlerFunc {
 		}
 
 		sub := r.Header.Get("sub")
-		// TODO: check if empty
+		if sub == "" {
+			httputils.RespondWithError(rw, ErrMissingSub)
+			return
+		}
+
 		river.UserID = sub
 
 		river, err = h.s.CreateRiver(ctx, river)
@@ -101,7 +108,11 @@ func (h httpHandler) HandleCreateModule(ctx context.Context) http.HandlerFunc {
 		}
 
 		sub := r.Header.Get("sub")
-		// TODO check if empty
+		if sub == "" {
+			httputils.RespondWithError(rw, ErrMissingSub)
+			return
+		}
+
 		module.UserID = sub
 
 		module, err = h.s.CreateModule(ctx, module)

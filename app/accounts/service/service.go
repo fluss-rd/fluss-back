@@ -48,7 +48,7 @@ var (
 	ErrMissingResourceInPermission = httputils.NewBadRequestError("missing resource in permission")
 	// ErrInvalidCredentials invalid credentials
 	ErrInvalidCredentials = httputils.ErrorResponse{Code: http.StatusUnauthorized, Message: "invalid credentials"}
-
+	ErrInvalidAction      = errors.New("invalid action")
 	// ErrMissingPatchOperation missing patch operation
 	ErrMissingPatchOperation = httputils.NewBadRequestError("missing patch operation")
 	// ErrMissingPatchPath missing patch path
@@ -174,6 +174,16 @@ func (s service) CreateRole(ctx context.Context, role models.Role) error {
 	return s.rolesRepo.CreateRole(ctx, role)
 }
 
+func areActionsValid(actions []models.ActionType) (bool, string) {
+	for _, action := range actions {
+		if !models.IsValidAction(action) {
+			return false, string(action)
+		}
+	}
+
+	return true, ""
+}
+
 func validateCreateRoleParams(role models.Role) error {
 	if role.Name == "" {
 		return ErrMissingRoleName
@@ -184,14 +194,43 @@ func validateCreateRoleParams(role models.Role) error {
 	}
 
 	for _, permission := range role.Permissions {
-		// TODO: validate the actions are valid actions
 		if len(permission.Actions) == 0 {
 			return ErrMissingActionInPermission
 		}
 
-		// TODO: Validate this is a valid resource as well
+		if ok, invalidAction := areActionsValid(permission.Actions); !ok {
+			return httputils.NewBadRequestError(fmt.Sprintf("%s: %s", ErrInvalidAction.Error(), invalidAction))
+		}
+
 		if permission.Resource == "" {
 			return ErrMissingResourceInPermission
+		}
+	}
+
+	return nil
+}
+
+func validateUpdateRequest(request httputils.PatchRequest) error {
+	for _, operation := range request {
+		if operation.Op == "" {
+			return ErrMissingPatchOperation
+		}
+
+		if operation.Path == "" {
+			return ErrMissingPatchPath
+		}
+
+		if operation.Value == "" {
+			return ErrMissingPatchValue
+		}
+
+		if operation.Op != "update" {
+			return httputils.NewBadRequestError("invalid patch operation: " + operation.Op)
+		}
+
+		// TODO: handle nested fields
+		if !userUpdatableFields[operation.Path] {
+			return httputils.NewBadRequestError("invalid patch path: " + operation.Path)
 		}
 	}
 
@@ -203,28 +242,9 @@ func (s service) UpdateUser(ctx context.Context, request httputils.PatchRequest,
 		return models.User{}, ErrNothingToUpdate
 	}
 
-	// TODO: move to another function
-	for _, operation := range request {
-		if operation.Op == "" {
-			return models.User{}, ErrMissingPatchOperation
-		}
-
-		if operation.Path == "" {
-			return models.User{}, ErrMissingPatchPath
-		}
-
-		if operation.Value == "" {
-			return models.User{}, ErrMissingPatchValue
-		}
-
-		if operation.Op != "update" {
-			return models.User{}, httputils.NewBadRequestError("invalid patch operation: " + operation.Op)
-		}
-
-		// TODO: handle nested fields
-		if !userUpdatableFields[operation.Path] {
-			return models.User{}, httputils.NewBadRequestError("invalid patch path: " + operation.Path)
-		}
+	err := validateUpdateRequest(request)
+	if err != nil {
+		return models.User{}, err
 	}
 
 	user := models.User{}
@@ -263,7 +283,7 @@ func (s service) UpdateUser(ctx context.Context, request httputils.PatchRequest,
 		}
 	}
 
-	_, err := s.usersRepo.UpdateUser(ctx, user)
+	_, err = s.usersRepo.UpdateUser(ctx, user)
 	if errors.Is(err, usersRepository.ErrNothingToUpdate) {
 		return models.User{}, ErrNothingToUpdate
 	}

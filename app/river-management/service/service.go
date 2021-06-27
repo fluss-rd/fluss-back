@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"unicode"
 
 	"github.com/flussrd/fluss-back/app/accounts/shared/httputils"
 	"github.com/flussrd/fluss-back/app/accounts/shared/utils"
@@ -29,7 +30,8 @@ var (
 	ErrMissingModuleID = httputils.NewBadRequestError("missing module id")
 	// ErrInvalidRiver invalid river
 	ErrInvalidRiver = httputils.NewBadRequestError("invalid river")
-
+	// ErrInvalidPhoneNumber invalid phone number
+	ErrInvalidPhoneNumber = httputils.NewBadRequestError("invalid phone number")
 	// ErrGeneratingIDFailed generating id failed
 	ErrGeneratingIDFailed = errors.New("generating id failed")
 	// ErrSavingRiverFailed saving river failed
@@ -136,10 +138,31 @@ func (s service) CreateModule(ctx context.Context, module models.Module) (models
 	return s.modulesRepo.SaveModule(ctx, module)
 }
 
+func isValidPhoneNumber(phoneNumber string) bool {
+	if phoneNumber == "" {
+		return false
+	}
+
+	if phoneNumber[0] != '+' {
+		return false
+	}
+
+	for index, s := range phoneNumber {
+		if !unicode.IsDigit(s) && index != 0 {
+			return false
+		}
+	}
+
+	return true
+}
+
 func validateCreateModuleFields(module models.Module) error {
-	// TODO: add validation for this to be a real phone number(regex)
 	if module.PhoneNumber == "" {
 		return ErrMissingPhoneNumber
+	}
+
+	if isValidPhoneNumber(module.PhoneNumber) {
+		return ErrInvalidPhoneNumber
 	}
 
 	if module.RiverID == "" {

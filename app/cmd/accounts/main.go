@@ -62,9 +62,9 @@ func main() {
 	router.Handle("/role", handler.HandleCreateRole(ctx)).Methods(http.MethodPost)
 	router.Handle("/role", handler.HandleGetRoles(ctx)).Methods(http.MethodGet)
 
-	router.Handle("/user", handler.HandleCreateUser(ctx)).Methods(http.MethodPost)
-	router.Handle("/user/{id}", handler.HandleGetUser(ctx)).Methods(http.MethodGet)
-	router.Handle("/user/{id}", handler.HandleUpdateUser(ctx)).Methods(http.MethodPatch)
+	router.Handle("/users", handler.HandleCreateUser(ctx)).Methods(http.MethodPost)
+	router.Handle("/users/{id}", handler.HandleGetUser(ctx)).Methods(http.MethodGet)
+	router.Handle("/users/{id}", handler.HandleUpdateUser(ctx)).Methods(http.MethodPatch)
 
 	router.Handle("/login", handler.HandleLogin(ctx)).Methods(http.MethodPost)
 	fmt.Println("Listening...")

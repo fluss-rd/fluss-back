@@ -26,6 +26,18 @@ const (
 	ActionTypeAll ActionType = "*"
 )
 
+var validActions = map[ActionType]bool{
+	ActionTypeRead:   true,
+	ActionTypeWrite:  true,
+	ActionTypeUpdate: true,
+	ActionTypeDelete: true,
+	ActionTypeAll:    true,
+}
+
+func IsValidAction(action ActionType) bool {
+	return validActions[action]
+}
+
 // Role represents a role where permissions are defined
 type Role struct {
 	// Name is the name of the role

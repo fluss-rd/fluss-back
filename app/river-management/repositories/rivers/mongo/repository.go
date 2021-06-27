@@ -13,6 +13,8 @@ import (
 
 const (
 	databaseName = "flussDB"
+
+	mongoDuplicateCode = 11000
 )
 
 type mongoRepository struct {
@@ -33,8 +35,15 @@ func (r mongoRepository) SaveRiver(ctx context.Context, river models.River) (mod
 	river.CreationDate = time.Now()
 	river.UpdateDate = time.Now()
 
-	// TODO: handle duplicate fields
 	_, err := riversCollection.InsertOne(ctx, river)
+	if errors.As(err, &mongo.WriteException{}) {
+		mongoErr, _ := err.(mongo.WriteException)
+		switch mongoErr.WriteErrors[0].Code {
+		case mongoDuplicateCode:
+			return models.River{}, repository.ErrDuplicateFields
+		}
+	}
+
 	if err != nil {
 		return models.River{}, err
 	}

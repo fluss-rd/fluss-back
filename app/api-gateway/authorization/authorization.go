@@ -14,6 +14,10 @@ import (
 var (
 	// ErrInvalidTokenSigningMethod invalid token signing method
 	ErrInvalidTokenSigningMethod = errors.New("invalid token signing method")
+	// ErrMissingRoleName missing role name
+	ErrMissingRoleName = errors.New("missing role name")
+	// ErrMissingSub missing sub
+	ErrMissingSub = errors.New("missing sub")
 )
 
 type claims struct {
@@ -59,6 +63,11 @@ func (a authorizer) Validate(ctx context.Context, token string, resource string,
 		return false, "", err
 	}
 
+	err = validateTokenClaims(tokenClaims)
+	if err != nil {
+		return false, "", err
+	}
+
 	// TODO: validate claims has the requried fields
 	role, err := a.getRole(ctx, tokenClaims)
 	if err != nil {
@@ -66,6 +75,18 @@ func (a authorizer) Validate(ctx context.Context, token string, resource string,
 	}
 
 	return checkPermissions(role, resource, action), tokenClaims.Sub, nil
+}
+
+func validateTokenClaims(claims claims) error {
+	if claims.RoleName == "" {
+		return ErrMissingRoleName
+	}
+
+	if claims.Sub == "" {
+		return ErrMissingSub
+	}
+
+	return nil
 }
 
 func checkPermissions(role models.Role, resource string, desiredAction string) bool {
