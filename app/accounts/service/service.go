@@ -48,7 +48,8 @@ var (
 	ErrMissingResourceInPermission = httputils.NewBadRequestError("missing resource in permission")
 	// ErrInvalidCredentials invalid credentials
 	ErrInvalidCredentials = httputils.ErrorResponse{Code: http.StatusUnauthorized, Message: "invalid credentials"}
-	ErrInvalidAction      = errors.New("invalid action")
+	// ErrInvalidAction invalid action
+	ErrInvalidAction = errors.New("invalid action")
 	// ErrMissingPatchOperation missing patch operation
 	ErrMissingPatchOperation = httputils.NewBadRequestError("missing patch operation")
 	// ErrMissingPatchPath missing patch path

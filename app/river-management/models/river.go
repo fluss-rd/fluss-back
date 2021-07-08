@@ -2,12 +2,17 @@ package models
 
 import "time"
 
+// BodyType represents the body of water type.
 type BodyType string
 
 const (
-	BodyTypeRiver  BodyType = "river"
+	// BodyTypeRiver river
+	BodyTypeRiver BodyType = "river"
+	// BodyTypeLagoon lagoon body of water type
 	BodyTypeLagoon BodyType = "lagoon"
-	BodyTypeLake   BodyType = "lake"
+	// BodyTypeLake lake body of water type
+	BodyTypeLake BodyType = "lake"
+	// BodyTypeStream stream body of water type
 	BodyTypeStream BodyType = "stream"
 )
 
