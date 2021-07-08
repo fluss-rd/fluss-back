@@ -53,6 +53,7 @@ func main() {
 	router := mux.NewRouter()
 
 	router.Handle("/rivers", handler.HandleGetRivers(ctx)).Methods(http.MethodGet)
+	router.Handle("/rivers/{id}", handler.HandleGetRiver(ctx)).Methods(http.MethodGet)
 	router.Handle("/rivers", handler.HandleCreateRiver(ctx)).Methods(http.MethodPost)
 
 	router.Handle("/modules", handler.HandleGetModules(ctx)).Methods(http.MethodGet)

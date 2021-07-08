@@ -26,6 +26,7 @@ var (
 type HTTPHandler interface {
 	HandleCreateRiver(ctx context.Context) http.HandlerFunc
 	HandleGetRivers(ctx context.Context) http.HandlerFunc
+	HandleGetRiver(ctx context.Context) http.HandlerFunc
 
 	HandleCreateModule(ctx context.Context) http.HandlerFunc
 	HandleGetModule(ctx context.Context) http.HandlerFunc
@@ -89,6 +90,22 @@ func (h httpHandler) HandleGetRivers(ctx context.Context) http.HandlerFunc {
 		}
 
 		httputils.RespondJSON(rw, http.StatusOK, rivers)
+	}
+}
+
+// HandlGetRiver handles the get river http request
+func (h httpHandler) HandleGetRiver(ctx context.Context) http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		riverID := mux.Vars(r)["id"]
+
+		river, err := h.s.GetRiver(ctx, riverID)
+		if err != nil {
+			fmt.Println("fetching_single_river_failed: ", err.Error())
+			httputils.RespondWithError(rw, err)
+			return
+		}
+
+		httputils.RespondJSON(rw, http.StatusOK, river)
 	}
 }
 

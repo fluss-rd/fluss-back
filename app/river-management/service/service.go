@@ -140,6 +140,19 @@ func (s service) GetRiversN(ctx context.Context) ([]models.River, error) {
 	return rivers, nil
 }
 
+func (s service) GetRiver(ctx context.Context, id string) (models.River, error) {
+	river, err := s.riversRepo.GetRiver(ctx, id)
+	if errors.Is(err, riversRepository.ErrNotFound) {
+		return models.River{}, httputils.NewNotFoundError("river")
+	}
+
+	if err != nil {
+		return models.River{}, err
+	}
+
+	return river, nil
+}
+
 func (s service) CreateModule(ctx context.Context, module models.Module) (models.Module, error) {
 	err := validateCreateModuleFields(module)
 	if err != nil {
