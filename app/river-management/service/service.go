@@ -161,7 +161,7 @@ func validateCreateModuleFields(module models.Module) error {
 		return ErrMissingPhoneNumber
 	}
 
-	if isValidPhoneNumber(module.PhoneNumber) {
+	if !isValidPhoneNumber(module.PhoneNumber) {
 		return ErrInvalidPhoneNumber
 	}
 
