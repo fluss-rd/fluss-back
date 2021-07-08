@@ -10,6 +10,7 @@ import (
 type RiversUsecases interface {
 	CreateRiver(ctx context.Context, river models.River) (models.River, error)
 	GetRiversN(ctx context.Context) ([]models.River, error) //  no pagination
+	GetRiver(ctx context.Context, riverID string) (models.River, error)
 }
 
 // ModulesUsecases defines the use cases functions related to modules

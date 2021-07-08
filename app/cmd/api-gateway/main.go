@@ -99,6 +99,13 @@ var endpoints = []router.Endpoint{
 		Authorized: true,
 	},
 	{
+		Path:       "/rivers/{id}",
+		RemotePath: "/rivers/{id}",
+		RemotHost:  "http://river-management:5000",
+		Method:     http.MethodGet,
+		Authorized: true,
+	},
+	{
 		Path:       "/rivers",
 		RemotePath: "/rivers",
 		RemotHost:  "http://river-management:5000",
