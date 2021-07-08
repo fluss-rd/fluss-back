@@ -48,7 +48,8 @@ var (
 	ErrMissingResourceInPermission = httputils.NewBadRequestError("missing resource in permission")
 	// ErrInvalidCredentials invalid credentials
 	ErrInvalidCredentials = httputils.ErrorResponse{Code: http.StatusUnauthorized, Message: "invalid credentials"}
-	ErrInvalidAction      = errors.New("invalid action")
+	// ErrInvalidAction invalid action
+	ErrInvalidAction = errors.New("invalid action")
 	// ErrMissingPatchOperation missing patch operation
 	ErrMissingPatchOperation = httputils.NewBadRequestError("missing patch operation")
 	// ErrMissingPatchPath missing patch path
@@ -237,12 +238,16 @@ func validateUpdateRequest(request httputils.PatchRequest) error {
 	return nil
 }
 
+// UpdateUser updates a user
 func (s service) UpdateUser(ctx context.Context, request httputils.PatchRequest, userID string) (models.User, error) {
 	if len(request) == 0 {
 		return models.User{}, ErrNothingToUpdate
 	}
 
-	err := validateUpdateRequest(request)
+	// TODO: refactor this whole function. DOES TOO MUCH
+
+	var err error
+	err = validateUpdateRequest(request)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -272,7 +277,8 @@ func (s service) UpdateUser(ctx context.Context, request httputils.PatchRequest,
 				return models.User{}, httputils.NewBadRequestError("invalid patch value: email")
 			}
 
-			hashedPassword, err := generatePasswordHashFunction([]byte(password), bcrypt.DefaultCost)
+			var hashedPassword []byte
+			hashedPassword, err = generatePasswordHashFunction([]byte(password), bcrypt.DefaultCost)
 			if err != nil {
 				return models.User{}, ErrPasswordHashingFailed
 			}

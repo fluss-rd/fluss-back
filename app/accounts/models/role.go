@@ -34,6 +34,7 @@ var validActions = map[ActionType]bool{
 	ActionTypeAll:    true,
 }
 
+// IsValidAction returns whether a given action is valid
 func IsValidAction(action ActionType) bool {
 	return validActions[action]
 }
