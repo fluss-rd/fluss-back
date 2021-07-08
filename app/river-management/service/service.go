@@ -30,8 +30,12 @@ var (
 	ErrMissingModuleID = httputils.NewBadRequestError("missing module id")
 	// ErrInvalidRiver invalid river
 	ErrInvalidRiver = httputils.NewBadRequestError("invalid river")
+	// ErrInvalidBodyType invalid body of water type
+	ErrInvalidBodyType = httputils.NewBadRequestError("invalid body of water type")
 	// ErrInvalidPhoneNumber invalid phone number
 	ErrInvalidPhoneNumber = httputils.NewBadRequestError("invalid phone number")
+	// ErrMissingType missing body of water type
+	ErrMissingType = httputils.NewBadRequestError("missing body of water type")
 	// ErrGeneratingIDFailed generating id failed
 	ErrGeneratingIDFailed = errors.New("generating id failed")
 	// ErrSavingRiverFailed saving river failed
@@ -63,10 +67,13 @@ func (s service) CreateRiver(ctx context.Context, river models.River) (models.Ri
 	}
 
 	// TODO: validate if the user ID exists consuming the accounts service. we should create a client library
-
 	river.RiverID = id
 
 	river, err = s.riversRepo.SaveRiver(ctx, river)
+	if errors.Is(err, riversRepository.ErrDuplicateFields) {
+		return models.River{}, httputils.NewBadRequestError("duplicate name")
+	}
+
 	if err != nil {
 		return models.River{}, fmt.Errorf("%w: %s", ErrSavingRiverFailed, err.Error())
 	}
@@ -89,6 +96,14 @@ func validateCreateRiverFields(river models.River) error {
 
 	if river.Location.Lng == 0 {
 		return ErrMissingLongitude
+	}
+
+	if !models.IsValidBodyType(river.Type) {
+		return ErrInvalidBodyType
+	}
+
+	if river.Type == "" {
+		return ErrMissingType
 	}
 
 	return nil
