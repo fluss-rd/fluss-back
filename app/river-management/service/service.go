@@ -18,6 +18,8 @@ var (
 	ErrMissingName = httputils.NewBadRequestError("missing name")
 	// ErrMissingUserID missing user id
 	ErrMissingUserID = httputils.NewBadRequestError("missing user id")
+	// ErrMissingLocation missing location
+	ErrMissingLocation = httputils.NewBadRequestError("missing location")
 	// ErrMissingLatitude missing latitude
 	ErrMissingLatitude = httputils.NewBadRequestError("missing latitude")
 	// ErrMissingLongitude missing longitude
@@ -81,6 +83,24 @@ func (s service) CreateRiver(ctx context.Context, river models.River) (models.Ri
 	return river, nil
 }
 
+func validateRiverLocation(location []models.Point) error {
+	if len(location) == 0 {
+		return ErrMissingLocation
+	}
+
+	for _, point := range location {
+		if point.Lat == 0 {
+			return ErrMissingLatitude
+		}
+
+		if point.Lng == 0 {
+			return ErrMissingLongitude
+		}
+	}
+
+	return nil
+}
+
 func validateCreateRiverFields(river models.River) error {
 	if river.Name == "" {
 		return ErrMissingName
@@ -90,12 +110,9 @@ func validateCreateRiverFields(river models.River) error {
 		return ErrMissingUserID
 	}
 
-	if river.Location.Lat == 0 {
-		return ErrMissingLatitude
-	}
-
-	if river.Location.Lng == 0 {
-		return ErrMissingLongitude
+	err := validateRiverLocation(river.Location)
+	if err != nil {
+		return err
 	}
 
 	if !models.IsValidBodyType(river.Type) {

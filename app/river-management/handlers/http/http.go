@@ -83,6 +83,7 @@ func (h httpHandler) HandleGetRivers(ctx context.Context) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		rivers, err := h.s.GetRiversN(ctx)
 		if err != nil {
+			fmt.Println("fetching_rivers_failed: ", err.Error())
 			httputils.RespondWithError(rw, err)
 			return
 		}
