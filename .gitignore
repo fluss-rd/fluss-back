@@ -40,7 +40,10 @@
 
 # Data
 /data
+/mongo-data
+/rabbit-data
 
 /build
 /secrets
 /rabbit
+/log

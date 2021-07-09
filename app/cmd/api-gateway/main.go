@@ -6,11 +6,13 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/flussrd/fluss-back/app/accounts/config"
 	repository "github.com/flussrd/fluss-back/app/api-gateway/repositories/auth/mongo"
 	"github.com/flussrd/fluss-back/app/api-gateway/router"
+	"github.com/flussrd/fluss-back/app/shared/rabbit"
 	gorillaHandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/subosito/gotenv"
@@ -202,6 +204,14 @@ var endpoints = []router.Endpoints{
 				UseSharedOptions: true,
 				TransportMode:    router.TransportModeHTTP,
 			},
+			{
+				Path:          `/messages`,
+				Method:        http.MethodPost,
+				Authorized:    false, //TODO: error handling when this is true an and no autorizer options are provided
+				TransportMode: router.TransportModeAMQP,
+				ExchangeName:  "modules-messages",
+				RoutingKey:    "",
+			},
 		},
 		SharedOptions: router.EndpointOptions{
 			AuthorizerOptions: &router.AuthorizerOptions{
@@ -246,7 +256,21 @@ func main() {
 		RequestHandler: handler,
 	}
 
-	err = proxy.HandleEndpoints(ctx, repo)
+	var rabbitClient rabbit.RabbitClient
+
+	for i := 0; i < 10; i++ {
+		rabbitClient, err = rabbit.InitRabbitClient(os.Getenv("RABBIT_URL"))
+		if err != nil {
+			time.Sleep(time.Second * 2)
+			continue
+		}
+	}
+
+	if err != nil {
+		log.Fatal("connecting_to_rabbit_failed: ", err.Error())
+	}
+
+	err = proxy.HandleEndpoints(ctx, repo, rabbitClient)
 	if err != nil {
 		log.Fatal("error_handling_endpoints: ", err.Error())
 	}

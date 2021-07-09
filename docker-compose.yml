@@ -3,6 +3,7 @@ services:
   api-gateway:
     environment:
       MONGO_URL: mongodb://db:27017/test
+      RABBIT_URL: amqp://fluss-service:F3VI8R@t3QQyLfn1n3rYEH8jMrIjT0@rabbit:5672
       CONFIG_FILE: app/api-gateway/config/config.yml
     build:
       context: .
@@ -11,6 +12,7 @@ services:
       - "5000:5000"
     depends_on:
       - db
+      - rabbit
   river-management:
     environment:
       MONGO_URL: mongodb://db:27017/test
@@ -32,7 +34,16 @@ services:
   db:
     image: mongo
     volumes:
-      - ./data:/data/db
+      - ./mongo-data:/data/db
       - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     ports:
       - 27017:27017
+  rabbit:
+    image: rabbitmq:3-management-alpine
+    ports:
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ./rabbit-data:/var/lib/rabbitmq/
+        # - ./log/rabbit/:/var/log/rabbitmq
+        - ./rabbit/definitions.json:/etc/rabbitmq/definitions.json
