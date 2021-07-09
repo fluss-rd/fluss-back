@@ -13,7 +13,7 @@ type httpRouter struct {
 	endpoint Endpoint
 }
 
-func newHttpRouter(endpoint Endpoint) RouterP {
+func newHttpRouter(endpoint Endpoint) Router {
 	return httpRouter{
 		endpoint: endpoint,
 	}

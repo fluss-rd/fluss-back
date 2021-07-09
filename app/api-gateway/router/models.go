@@ -25,17 +25,17 @@ var (
 )
 
 // routes requests
-type RouterP interface {
+type Router interface {
 	Route() http.HandlerFunc
 }
 
 type Gateway struct {
-	Router     RouterP
+	Router     Router
 	Authorizer Authorizer
 	Endpoint   Endpoint
 }
 
-func newRouter(endpoint Endpoint, mode TransportMode) (RouterP, error) {
+func newRouter(endpoint Endpoint, mode TransportMode) (Router, error) {
 	switch mode {
 	case TransportModeHTTP:
 		return newHttpRouter(endpoint), nil
