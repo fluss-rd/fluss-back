@@ -60,7 +60,7 @@ type AuthorizerOptions struct {
 	AuthType         AuthorizerType
 	JWTSigningMethod jwt.SigningMethod
 	JwtSigningSecret string
-	authRepo         authRepo.Repository
+	AuthRepo         authRepo.Repository
 }
 
 // Router defines the methods for generating routes
@@ -70,12 +70,12 @@ type Router interface {
 
 type router struct {
 	authRepo  authRepo.Repository
-	endpoints []SingleEndpoint
+	endpoints []Endpoint
 	handler   *mux.Router // TODO: REMOVE THIS DEPENDENCY, this is too coupled
 }
 
 // NewRouter returns a new router entity for routing requests
-func NewRouter(ctx context.Context, endpoints []SingleEndpoint, repo authRepo.Repository, handler *mux.Router) (Router, error) {
+func NewRouter(ctx context.Context, endpoints []Endpoint, repo authRepo.Repository, handler *mux.Router) (Router, error) {
 	router := &router{
 		endpoints: endpoints,
 		authRepo:  repo,
@@ -121,7 +121,7 @@ func getProxy(url *url.URL) (*httputil.ReverseProxy, error) {
 	return httputil.NewSingleHostReverseProxy(url), nil
 }
 
-func getActualURL(endpoint SingleEndpoint, vars map[string]string) (*url.URL, error) {
+func getActualURL(endpoint Endpoint, vars map[string]string) (*url.URL, error) {
 	wholeRemoteEndpoint := endpoint.RemotHost + endpoint.RemotePath
 
 	for k, v := range vars {
@@ -142,7 +142,7 @@ func setupPreflightResponse(w *http.ResponseWriter, req *http.Request) {
 	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 }
 
-func handleRequest(endpoint SingleEndpoint, remoteURL *url.URL) http.HandlerFunc {
+func handleRequest(endpoint Endpoint, remoteURL *url.URL) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodOptions {
 			setupPreflightResponse(&rw, r)
@@ -189,7 +189,7 @@ func getToken(r http.Request) (string, error) {
 	return splittedToken[1], nil
 }
 
-func authMiddleware(ctx context.Context, endpoint SingleEndpoint, handler http.HandlerFunc, repo authRepo.Repository) http.HandlerFunc {
+func authMiddleware(ctx context.Context, endpoint Endpoint, handler http.HandlerFunc, repo authRepo.Repository) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		token, err := getToken(*r)
 		if err != nil {
@@ -224,7 +224,7 @@ func authMiddleware(ctx context.Context, endpoint SingleEndpoint, handler http.H
 	}
 }
 
-func getResourceFromEndpoint(endpoint SingleEndpoint) (string, error) {
+func getResourceFromEndpoint(endpoint Endpoint) (string, error) {
 	splitted := strings.Split(endpoint.Path, "/")
 	// TODO: handle when this is of unexpected length
 	// If the last part of the path contais a {, that means is a variable like : modules/{id}, so we should return the one before that

@@ -35,10 +35,10 @@ type Authorizer interface {
 	Authorize(ctx context.Context, req *http.Request, resource string, action string) (string, error)
 }
 
-func NewAuthorizer(options AuthorizerOptions) (Authorizer, error) {
+func NewAuthorizer(options AuthorizerOptions, repo authRepo.Repository) (Authorizer, error) {
 	switch options.AuthType {
 	case AuthorizerTypeJWT:
-		return newJWTAuthorizer(options), nil
+		return newJWTAuthorizer(options, repo), nil
 	}
 
 	return nil, errors.New("invalid authorizer")
@@ -54,9 +54,10 @@ type jwtAuthorizer struct {
 	authorizerOptions AuthorizerOptions
 }
 
-func newJWTAuthorizer(options AuthorizerOptions) Authorizer {
+func newJWTAuthorizer(options AuthorizerOptions, repo authRepo.Repository) Authorizer {
 	return jwtAuthorizer{
-		repo: options.authRepo,
+		authorizerOptions: options,
+		repo:              repo,
 	}
 }
 

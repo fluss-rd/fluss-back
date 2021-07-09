@@ -35,10 +35,10 @@ type Gateway struct {
 	Endpoint   Endpoint
 }
 
-func newRouter(mode TransportMode) (RouterP, error) {
+func newRouter(endpoint Endpoint, mode TransportMode) (RouterP, error) {
 	switch mode {
 	case TransportModeHTTP:
-		return newHttpRouter(), nil
+		return newHttpRouter(endpoint), nil
 	}
 
 	return nil, ErrInvalidTransportMode
