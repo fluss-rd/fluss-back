@@ -8,6 +8,7 @@ require (
 	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
+	github.com/streadway/amqp v1.0.0 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/strikesecurity/strikememongo v0.2.4
 	github.com/subosito/gotenv v1.2.0
