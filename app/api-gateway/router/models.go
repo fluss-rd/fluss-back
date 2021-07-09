@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/flussrd/fluss-back/app/accounts/shared/httputils"
+	"github.com/flussrd/fluss-back/app/shared/rabbit"
 	"github.com/gorilla/mux"
 )
 
@@ -35,10 +36,12 @@ type Gateway struct {
 	Endpoint   Endpoint
 }
 
-func newRouter(endpoint Endpoint, mode TransportMode) (Router, error) {
+func newRouter(endpoint Endpoint, mode TransportMode, rabbitClient rabbit.RabbitClient) (Router, error) {
 	switch mode {
 	case TransportModeHTTP:
 		return newHttpRouter(endpoint), nil
+	case TransportModeAMQP:
+		return newRabbitMqRouter(endpoint, rabbitClient), nil
 	}
 
 	return nil, ErrInvalidTransportMode

@@ -39,9 +39,12 @@ type Endpoint struct {
 	TransportMode    TransportMode
 	RemotHost        string
 	Method           string
+	ExchangeName     string // rabbitmq exchange
+	RoutingKey       string // rabbitmq routing key
 	Authorized       bool
 	Options          EndpointOptions
 	UseSharedOptions bool //TODO: maybe we should think of a way of just using CERTAIN shared options
+
 }
 
 type Endpoints struct {
@@ -51,6 +54,7 @@ type Endpoints struct {
 
 type EndpointOptions struct {
 	*AuthorizerOptions
+	*RouterOptions
 }
 
 type AuthorizerOptions struct {
@@ -58,6 +62,9 @@ type AuthorizerOptions struct {
 	JWTSigningMethod jwt.SigningMethod
 	JwtSigningSecret string
 	AuthRepo         authRepo.Repository
+}
+
+type RouterOptions struct {
 }
 
 func modifyRequest(r *http.Request, remoteURL *url.URL) {
