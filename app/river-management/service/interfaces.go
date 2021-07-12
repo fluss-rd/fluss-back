@@ -17,6 +17,7 @@ type RiversUsecases interface {
 type ModulesUsecases interface {
 	CreateModule(ctx context.Context, module models.Module) (models.Module, error)
 	GetModule(ctx context.Context, moduleID string) (models.Module, error)
+	GetModuleByPhoneNumber(ctx context.Context, phoneNumber string) (models.Module, error)
 	GetModulesN(ctx context.Context) ([]models.Module, error)                        // no pagination
 	GetModulesByRiverN(ctx context.Context, riverID string) ([]models.Module, error) // no pagination
 }

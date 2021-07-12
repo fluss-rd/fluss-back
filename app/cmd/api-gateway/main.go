@@ -22,7 +22,7 @@ import (
 )
 
 var endpoints = []router.Endpoints{
-	router.Endpoints{
+	{
 		Endpoints: []router.Endpoint{
 			{
 				Path:             "/account/login",

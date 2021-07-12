@@ -17,6 +17,7 @@ var (
 // Repository defines the data-persistance methods related to modules
 type Repository interface {
 	GetModule(ctx context.Context, moduleID string) (models.Module, error)
+	GetModuleByPhoneNumber(ctx context.Context, phoneNumber string) (models.Module, error)
 	GetAllModulesWithOutPagination(ctx context.Context) ([]models.Module, error)
 	GetAllModules(ctx context.Context) ([]models.Module, string, error)
 	GetModulesByRiverWithoutPagination(ctx context.Context, riverID string) ([]models.Module, error)

@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+
+package grpchandler;
+option go_package = "./grpchandler";
+
+service Service {
+    rpc GetModuleByPhonenumber(GetModuleRequest) returns (Module) {};
+}
+
+message GetModuleRequest {
+    string phoneNumber = 1;
+}
+
+message Module {
+    string moduleID = 1;
+	string phoneNumber = 2;
+	string alias = 3;            
+	string riverID = 4;      
+	string riverName = 5;    
+	string userID = 6;       
+	int64 creationDate = 7; 
+	int64 updateDate = 8;   
+	string currentstate = 9; 
+	string serial = 10;             
+	Point location = 11;
+}
+
+message Point {
+    double latitude = 1;
+    double longitude = 64;
+}

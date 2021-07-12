@@ -47,3 +47,13 @@ services:
         - ./rabbit-data:/var/lib/rabbitmq/
         # - ./log/rabbit/:/var/log/rabbitmq
         - ./rabbit/definitions.json:/etc/rabbitmq/definitions.json
+  influxdb:
+    image: influxdb:2.0-alpine
+    ports:
+      - 8086:8086
+    volumes:
+      # - ./influx-data:/root/.influxdbv2
+      - ./influx-data:/var/lib/influxdb2
+    environment:
+      - INFLUXDB_ADMIN_USER=fluss-influx
+      - INFLUXDB_ADMIN_PASSWORD=fluss-influx

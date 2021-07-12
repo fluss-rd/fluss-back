@@ -46,6 +46,26 @@ func (r mongoRepository) GetModule(ctx context.Context, moduleID string) (models
 	return module, nil
 }
 
+func (r mongoRepository) GetModuleByPhoneNumber(ctx context.Context, phoneNumber string) (models.Module, error) {
+	modulesCollection := r.getModulesCollection()
+
+	module := models.Module{}
+
+	err := modulesCollection.FindOne(ctx, bson.M{
+		"phoneNumber": phoneNumber,
+	}).Decode(&module)
+
+	if errors.Is(err, mongo.ErrNoDocuments) {
+		return models.Module{}, repository.ErrNotFound
+	}
+
+	if err != nil {
+		return models.Module{}, err
+	}
+
+	return module, nil
+}
+
 func (r mongoRepository) GetAllModulesWithOutPagination(ctx context.Context) ([]models.Module, error) {
 	return r.getModulesWithoutPagination(ctx, bson.M{})
 }

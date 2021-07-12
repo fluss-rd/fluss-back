@@ -4,10 +4,13 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 
 	"github.com/flussrd/fluss-back/app/accounts/config"
+	grpcHandlers "github.com/flussrd/fluss-back/app/river-management/handlers/grpc"
+	grpcCode "github.com/flussrd/fluss-back/app/river-management/handlers/grpc/grpchandler"
 	handlers "github.com/flussrd/fluss-back/app/river-management/handlers/http"
 	modulesRepository "github.com/flussrd/fluss-back/app/river-management/repositories/modules/mongo"
 	riversRepository "github.com/flussrd/fluss-back/app/river-management/repositories/rivers/mongo"
@@ -17,6 +20,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"google.golang.org/grpc"
 )
 
 func init() {
@@ -62,7 +66,17 @@ func main() {
 
 	fmt.Println("Listening on port " + config.Port)
 
-	err = http.ListenAndServe(":"+config.Port, router)
+	grpcHandler := grpcHandlers.NewHandler(service)
+
+	grpcServer := grpc.NewServer()
+	grpcCode.RegisterServiceServer(grpcServer, grpcHandler)
+
+	listener, err := net.Listen("tcp", ":"+config.Port)
+	if err != nil {
+		log.Fatal("failed to start listener")
+	}
+
+	err = http.Serve(listener, router)
 	if err != nil {
 		log.Fatal("failed to start listening")
 	}
