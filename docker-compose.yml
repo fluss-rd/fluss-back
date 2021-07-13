@@ -13,6 +13,12 @@ services:
     depends_on:
       - db
       - rabbit
+  sender-simulator:
+    environment:
+      SEND_MESSAGES_URL: http://api-gateway:5000/messages
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.data-sender-simulator
   river-management:
     environment:
       MONGO_URL: mongodb://db:27017/test

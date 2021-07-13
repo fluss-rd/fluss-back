@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/flussrd/fluss-back/app/river-management/handlers/grpc/grpchandler"
 	riverGrpcClient "github.com/flussrd/fluss-back/app/shared/grpc-clients/river-management"
@@ -32,6 +33,9 @@ func (s service) SaveMeasurement(ctx context.Context, message models.Message) er
 	}
 
 	message.ModuleID = module.ModuleID
+
+	log.Println("message to be saved: ")
+	log.Println(message)
 
 	// TODO: handle the repo
 	return s.repo.SaveMeasurement(ctx, message)
