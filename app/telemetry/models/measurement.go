@@ -10,6 +10,7 @@ const (
 	// MeasurementTypeTY turbidity
 	MeasurementTypeTDY MeasurementType = "ty"
 	MeasurementTypeTDS MeasurementType = "tds"
+	MeasurementTypeTO  MeasurementType = "do"
 	MeasurementTypeLat MeasurementType = "lat"
 	MeasurementTypeLng MeasurementType = "lng"
 )

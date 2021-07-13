@@ -45,6 +45,12 @@ func (handler rabbitMQHandler) HandleMessages(ctx context.Context) error {
 			log.Println(string(message.Body))
 		}
 
+		// TODO: validate in another function
+		if moduleMessage.PhoneNumber == "" {
+			log.Println("ERROR: missing phone number in message")
+			continue
+		}
+
 		err = handler.service.SaveMeasurement(ctx, moduleMessage)
 		if err != nil {
 			log.Println("saving measurement failed: ", err.Error())

@@ -26,7 +26,7 @@ func (handler grpcHandler) GetModuleByPhonenumber(ctx context.Context, request *
 	fmt.Println("called")
 	module, err := handler.s.GetModuleByPhoneNumber(ctx, request.PhoneNumber)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w with phone number: %s", err, request.PhoneNumber)
 	}
 
 	return &grpcService.Module{
