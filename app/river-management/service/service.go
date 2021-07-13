@@ -238,6 +238,10 @@ func (s service) GetModule(ctx context.Context, moduleID string) (models.Module,
 	return module, nil
 }
 
+func (s service) GetModuleByPhoneNumber(ctx context.Context, phoneNumber string) (models.Module, error) {
+	return s.modulesRepo.GetModuleByPhoneNumber(ctx, phoneNumber)
+}
+
 func (s service) GetModulesN(ctx context.Context) ([]models.Module, error) {
 	modules, err := s.modulesRepo.GetAllModulesWithOutPagination(ctx)
 	if errors.Is(err, modulesRepository.ErrNotFound) {

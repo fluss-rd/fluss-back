@@ -3,6 +3,7 @@ package router
 import (
 	"context"
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/flussrd/fluss-back/app/accounts/shared/httputils"
@@ -29,7 +30,10 @@ func (router rabbitRouter) Route() http.HandlerFunc {
 			return
 		}
 
-		err = router.rabbitClient.Publish(context.Background(), router.endpoint.ExchangeName, router.endpoint.RoutingKey, requestBody)
+		log.Println("request body to be sent: ")
+		log.Println(string(requestBody))
+
+		err = router.rabbitClient.PublishBytes(context.Background(), router.endpoint.ExchangeName, router.endpoint.RoutingKey, requestBody)
 		if err != nil {
 			httputils.RespondInternalServerError(rw)
 			return

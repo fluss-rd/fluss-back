@@ -20,6 +20,9 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.river-management
+    ports:
+      - "5001:5000"
+      - "8080:8080"
     depends_on:
       - db
   accounts:
@@ -31,6 +34,16 @@ services:
       dockerfile: docker/Dockerfile.accounts
     depends_on:
       - db
+  telemetry:
+    env_file:
+      - environment/telemetry.local.env
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.telemetry
+    depends_on:
+      - influxdb
+      - rabbit
+      - river-management
   db:
     image: mongo
     volumes:
@@ -47,3 +60,14 @@ services:
         - ./rabbit-data:/var/lib/rabbitmq/
         # - ./log/rabbit/:/var/log/rabbitmq
         - ./rabbit/definitions.json:/etc/rabbitmq/definitions.json
+  influxdb:
+    image: influxdb:2.0-alpine
+    ports:
+      - 8086:8086
+    volumes:
+      # - ./influx-data:/root/.influxdbv2
+      - ./influx-data:/var/lib/influxdb2
+    environment:
+      - INFLUXDB_ADMIN_USER=fluss-influx
+      - INFLUXDB_ADMIN_PASSWORD=fluss-influx
+    
