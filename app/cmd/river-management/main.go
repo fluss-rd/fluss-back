@@ -71,15 +71,30 @@ func main() {
 	grpcServer := grpc.NewServer()
 	grpcCode.RegisterServiceServer(grpcServer, grpcHandler)
 
-	listener, err := net.Listen("tcp", ":"+config.Port)
+	grpcListener, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		log.Fatal("failed to start listener")
 	}
 
-	err = http.Serve(listener, router)
-	if err != nil {
-		log.Fatal("failed to start listening")
-	}
+	forever := make(chan bool)
+
+	go func() {
+		err = http.ListenAndServe(":"+config.Port, router)
+		if err != nil {
+			log.Fatal("failed to start listening http")
+		}
+	}()
+
+	go func() {
+		err = grpcServer.Serve(grpcListener)
+		if err != nil {
+			log.Fatal("failed to start listening grpc server")
+		}
+	}()
+
+	fmt.Println("succesfully started server")
+
+	<-forever
 }
 
 func getMongoClient(ctx context.Context, connectionURL string) (*mongo.Client, error) {

@@ -1,11 +1,11 @@
 syntax = "proto3";
 
 
-package grpchandler;
-option go_package = "./grpchandler";
+package proto;
+option go_package = "app/river-management/handlers/grpc/grpchandler";
 
 service Service {
-    rpc GetModuleByPhonenumber(GetModuleRequest) returns (Module) {};
+    rpc GetModuleByPhonenumber(GetModuleRequest) returns (Module);
 }
 
 message GetModuleRequest {

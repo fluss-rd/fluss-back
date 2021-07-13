@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 
 	grpcService "github.com/flussrd/fluss-back/app/river-management/handlers/grpc/grpchandler"
 	"github.com/flussrd/fluss-back/app/river-management/service"
@@ -22,6 +23,7 @@ func NewHandler(s service.Service) Handler {
 }
 
 func (handler grpcHandler) GetModuleByPhonenumber(ctx context.Context, request *grpcService.GetModuleRequest) (*grpcService.Module, error) {
+	fmt.Println("called")
 	module, err := handler.s.GetModuleByPhoneNumber(ctx, request.PhoneNumber)
 	if err != nil {
 		return nil, err

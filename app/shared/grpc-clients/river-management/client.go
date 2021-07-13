@@ -1,18 +1,28 @@
 package client
 
 import (
-	grpchandler "github.com/flussrd/fluss-back/app/river-management/handlers/grpc/grpchandler"
+	"fmt"
+	"os"
+
+	"github.com/flussrd/fluss-back/app/river-management/handlers/grpc/grpchandler"
 	"google.golang.org/grpc"
 )
 
+type Client struct {
+	conn *grpc.ClientConn
+}
+
 // TODO: be able to pass options
-func InitClient() (*grpchandler.ServiceClient, error) {
-	conn, err := grpc.Dial("river-management:5000", grpc.WithInsecure()) // TODO: find out service discovery tools
+func InitClient() (*Client, error) {
+	fmt.Println(os.Getenv("RIVER_MANAGEMENT_URL"))
+	conn, err := grpc.Dial(os.Getenv("RIVER_MANAGEMENT_URL"), grpc.WithInsecure()) // TODO: find out service discovery tools
 	if err != nil {
 		return nil, err
 	}
 
-	client := grpchandler.NewServiceClient(conn)
+	return &Client{conn: conn}, nil
+}
 
-	return &client, nil
+func (c Client) GetServiceClient() grpchandler.ServiceClient {
+	return grpchandler.NewServiceClient(c.conn)
 }

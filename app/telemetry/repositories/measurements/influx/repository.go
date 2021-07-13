@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	organizationName = "fluss"
+	organizationName = "Fluss"
 	bucketName       = "modules-data"
 )
 

@@ -9,6 +9,8 @@ import (
 
 type RabbitClient interface {
 	Publish(ctx context.Context, exchangeName string, routingKey string, message interface{}) error
+	PublishBytes(ctx context.Context, exchangeName string, routingKey string, message []byte) error
+	Consume(ctx context.Context, queueName string) (<-chan amqp.Delivery, error)
 	Finish()
 }
 
@@ -49,6 +51,19 @@ func (client *rabbitClient) Publish(ctx context.Context, exchangeName string, ro
 		amqp.Publishing{
 			ContentType: "text/plain",
 			Body:        marshalledBody,
+		},
+	)
+}
+
+func (client *rabbitClient) PublishBytes(ctx context.Context, exchangeName string, routingKey string, message []byte) error {
+	return client.ch.Publish(
+		exchangeName,
+		routingKey,
+		false, // mandatory
+		false, // inmediate
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        message,
 		},
 	)
 }
