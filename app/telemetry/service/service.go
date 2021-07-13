@@ -33,5 +33,6 @@ func (s service) SaveMeasurement(ctx context.Context, message models.Message) er
 
 	message.ModuleID = module.ModuleID
 
+	// TODO: handle the repo
 	return s.repo.SaveMeasurement(ctx, message)
 }

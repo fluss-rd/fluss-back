@@ -35,5 +35,6 @@ func (repo influxRepository) SaveMeasurement(ctx context.Context, message models
 
 	point = point.SetTime(message.Date)
 
+	// TODO: handle errors coming from the influx
 	return writeApi.WritePoint(ctx, point)
 }

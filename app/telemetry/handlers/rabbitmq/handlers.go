@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	b64 "encoding/base64"
 	"encoding/json"
 	"log"
 
@@ -38,13 +37,6 @@ func (handler rabbitMQHandler) HandleMessages(ctx context.Context) error {
 
 		log.Println("routing key: ", message.RoutingKey)
 
-		// decodedBody, err := decodeBody(message.Body)
-		// if err != nil {
-		// 	log.Println("decoding body failed: ", err.Error())
-		// 	log.Println(string(message.Body))
-		// 	continue
-		// }
-
 		// TODO: the logic should be in another function
 		moduleMessage := models.Message{}
 		err = json.Unmarshal(message.Body, &moduleMessage)
@@ -61,16 +53,4 @@ func (handler rabbitMQHandler) HandleMessages(ctx context.Context) error {
 
 	// TODO: we should be listening to a cancelling signal
 	return nil
-}
-
-func decodeBody(body []byte) ([]byte, error) {
-	var output []byte
-	encoding := b64.StdEncoding.WithPadding(b64.NoPadding)
-
-	_, err := encoding.Decode(output, body)
-	if err != nil {
-		return nil, err
-	}
-
-	return output, nil
 }
