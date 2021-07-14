@@ -35,14 +35,12 @@ func (handler rabbitMQHandler) HandleMessages(ctx context.Context) error {
 	log.Println("Listening for messages...")
 	for message := range ch {
 
-		log.Println("routing key: ", message.RoutingKey)
-
 		// TODO: the logic should be in another function
 		moduleMessage := models.Message{}
 		err = json.Unmarshal(message.Body, &moduleMessage)
 		if err != nil {
-			log.Println("unmarshalling_message_failed", err)
-			log.Println(string(message.Body))
+			log.Println("unmarshalling_message_failed: ", err)
+			continue
 		}
 
 		// TODO: validate in another function
@@ -54,6 +52,7 @@ func (handler rabbitMQHandler) HandleMessages(ctx context.Context) error {
 		err = handler.service.SaveMeasurement(ctx, moduleMessage)
 		if err != nil {
 			log.Println("saving measurement failed: ", err.Error())
+			continue
 		}
 	}
 

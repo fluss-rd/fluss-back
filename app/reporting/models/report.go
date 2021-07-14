@@ -5,13 +5,20 @@ import "time"
 type Report struct {
 	ModuleID    string    `json:"moduleID"`
 	RiverID     string    `json:"riverID"`
-	WQI         float64   `json:"wqi"`
-	PH          float64   `json:"ph"`
-	TDS         float64   `json:"tds"`
-	DO          float64   `json:"do"`
-	TMP         float64   `json:"tmp"`
+	Data        []Data    `json:"data"`
 	Location    float64   `json:"location"`
 	LastUpdated time.Time `json:"lastUpdated"`
+}
+
+type Data struct {
+	Date       time.Time   `json:"date"`
+	Parameters []Parameter `json:"parameters"`
+	Location   Location    `json:"location"`
+}
+
+type Parameter struct {
+	Name  string
+	Value float64
 }
 
 type Location struct {

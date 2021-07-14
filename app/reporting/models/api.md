@@ -48,11 +48,28 @@ Respuesta:
    "data":[
       {
          "date":"1996-10-15T00:05:32.000Z",
-         "ph":10,
-         "tds":10,
-         "ox":10,
-         "tmp":25,
-         "wqi":30,
+         "parameters": [
+             {
+                "name": "ph",
+                "value": 10
+             },
+             {
+                "name": "tds",
+                "value": 10
+             },
+             {
+                "name": "tmp",
+                "value": 10
+             },
+             {
+                "name": "do",
+                "value": 10
+             },
+             {
+                "name": "wqi",
+                "value": 10
+             },
+         ],
          "location": {
             "latitude": 0.1234,
             "longitude": 0.43214
@@ -60,11 +77,28 @@ Respuesta:
       },
       {
          "date":"1996-10-15T00:05:32.000Z",
-         "ph":10,
-         "tds":10,
-         "ox":10,
-         "tmp":25,
-         "wqi":30,
+         "parameters": [
+             {
+                "name": "ph",
+                "value": 10
+             },
+             {
+                "name": "tds",
+                "value": 10
+             },
+             {
+                "name": "tmp",
+                "value": 10
+             },
+             {
+                "name": "do",
+                "value": 10
+             },
+             {
+                "name": "wqi",
+                "value": 10
+             },
+         ],
          "location": {
             "latitude": 0.1234,
             "longitude": 0.43214

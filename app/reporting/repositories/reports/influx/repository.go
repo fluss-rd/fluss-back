@@ -6,14 +6,9 @@ import (
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 
+	"github.com/flussrd/fluss-back/app/reporting/models"
 	repository "github.com/flussrd/fluss-back/app/reporting/repositories/reports"
 )
-
-// change this pls
-type value struct {
-	ph          float64
-	temperature float64
-}
 
 const (
 	organizationName = "Fluss"
@@ -29,47 +24,92 @@ func New(client influxdb2.Client) repository.Repository {
 	}
 }
 
-func (repo influxRepository) GetData(ctx context.Context) error {
+func (repo influxRepository) GetDataByModule(ctx context.Context, moduleID string) (models.Report, error) {
 	// URGENT TODO: add the wqi to the measurement
 	queryAPI := repo.client.QueryAPI(organizationName)
+
+	// query := `from(bucket: "modules-data")
+	// |> range(start: -48h, stop: now())
+	// |> filter(fn: (r) => r["_measurement"] == "water-sensor")
+	// |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)
+	// |> yield(name: "mean")`
 
 	query := `from(bucket: "modules-data")
 	|> range(start: -48h, stop: now())
 	|> filter(fn: (r) => r["_measurement"] == "water-sensor")
+	|> filter(fn: (r) => r["moduleID"] == "MDL8dab9bcded8b4a0a9b18a9b8e2e0c758")
 	|> aggregateWindow(every: 1h, fn: mean, createEmpty: false)
 	|> yield(name: "mean")`
 
 	result, err := queryAPI.Query(ctx, query)
 	if err != nil {
-		fmt.Println("Hola")
-		return err
+		return models.Report{}, err
 	}
 
-	values := map[string]*value{}
+	var report *models.Report
+	dataPerModuleAndTime := map[string]*models.Data{}
+	locationPerModuleAndTime := map[string]map[string]float64{}
+	parameters := map[string][]models.Parameter{}
 
 	for result.Next() {
+		if report == nil {
+			riverID, _ := result.Record().ValueByKey("riverID").(string)
+			moduleID, _ := result.Record().ValueByKey("moduleID").(string)
+			report = &models.Report{
+				ModuleID: moduleID,
+				RiverID:  riverID,
+			}
+		}
+
 		key := fmt.Sprintf("%v:%s", result.Record().ValueByKey("moduleID"), result.Record().Time().String())
-		if values[key] == nil {
-			values[key] = &value{}
+		if dataPerModuleAndTime[key] == nil {
+			dataPerModuleAndTime[key] = &models.Data{
+				Date: result.Record().Time(),
+			}
 		}
 
-		switch result.Record().Field() {
-		case "ph":
-			values[key].ph = result.Record().Value().(float64)
-		case "tmp":
-			values[key].temperature = result.Record().Value().(float64)
+		if locationPerModuleAndTime[key] == nil {
+			locationPerModuleAndTime[key] = map[string]float64{}
+		}
+
+		// THIS has go AFTER the map is initialized in last step
+		if result.Record().Field() == "lat" {
+			lat, _ := result.Record().Value().(float64)
+			locationPerModuleAndTime[key]["lat"] = lat
+		}
+
+		if result.Record().Field() == "lng" {
+			lng, _ := result.Record().Value().(float64)
+			locationPerModuleAndTime[key]["lng"] = lng
+		}
+
+		if parameters[key] == nil {
+			parameters[key] = []models.Parameter{}
+		}
+
+		parameters[key] = append(parameters[key], models.Parameter{
+			Name:  result.Record().Field(),
+			Value: result.Record().Value().(float64),
+		})
+	}
+
+	// Assigning parameters and location to data
+	for k := range dataPerModuleAndTime {
+		dataPerModuleAndTime[k].Parameters = parameters[k]
+		dataPerModuleAndTime[k].Location = models.Location{
+			Latitude:  locationPerModuleAndTime[k]["lat"],
+			Longitude: locationPerModuleAndTime[k]["lat"],
 		}
 	}
 
-	list := make([]value, len(values))
+	datas := []models.Data{}
 
-	index := 0
-	for _, v := range values {
-		list[index] = *v
-		index++
+	// Assigning the data the report
+	for _, v := range dataPerModuleAndTime {
+		datas = append(datas, *v)
 	}
 
-	fmt.Println(list[0])
+	report.Data = datas
 
-	return nil
+	return *report, nil
 }

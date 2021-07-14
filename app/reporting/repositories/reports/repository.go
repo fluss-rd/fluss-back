@@ -1,7 +1,16 @@
 package repository
 
-import "context"
+import (
+	"context"
+
+	"github.com/flussrd/fluss-back/app/reporting/models"
+)
+
+type Parameter struct {
+	Name  string
+	Value float64
+}
 
 type Repository interface {
-	GetData(ctx context.Context) error
+	GetDataByModule(ctx context.Context, moduleID string) (models.Report, error)
 }
