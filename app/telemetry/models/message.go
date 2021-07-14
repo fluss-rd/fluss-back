@@ -12,6 +12,7 @@ type Message struct {
 	ID           string        `json:"id"`
 	Date         time.Time     `json:"date"`
 	ModuleID     string        `json:"moduleID"`
+	RiverID      string        `json:"riverID"`
 	PhoneNumber  string        `json:"phoneNumber"`
 	MessageType  MessageType   `json:"messageType"`
 	Measurements []Measurement `json:"measurements,omitempty"`

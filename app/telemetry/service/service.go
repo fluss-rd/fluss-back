@@ -3,12 +3,16 @@ package service
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/flussrd/fluss-back/app/river-management/handlers/grpc/grpchandler"
 	riverGrpcClient "github.com/flussrd/fluss-back/app/shared/grpc-clients/river-management"
+	calculator "github.com/flussrd/fluss-back/app/telemetry/lib/wqi-calculator"
 	"github.com/flussrd/fluss-back/app/telemetry/models"
 	repository "github.com/flussrd/fluss-back/app/telemetry/repositories/measurements"
+)
+
+var (
+	wqiCalculator, _ = calculator.NewCalculator(calculator.IndexTypeWAI)
 )
 
 type service struct {
@@ -32,11 +36,13 @@ func (s service) SaveMeasurement(ctx context.Context, message models.Message) er
 		return err
 	}
 
+	wqi := wqiCalculator.GetWQI(message.Measurements)
+
+	message.Measurements = append(message.Measurements, models.Measurement{Name: "wqi", Value: wqi})
+
 	message.ModuleID = module.ModuleID
+	message.RiverID = module.RiverID
 
-	log.Println("message to be saved: ")
-	log.Println(message)
-
-	// TODO: handle the repo
+	// TODO: handle the repo errors
 	return s.repo.SaveMeasurement(ctx, message)
 }

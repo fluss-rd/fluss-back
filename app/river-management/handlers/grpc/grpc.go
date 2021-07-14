@@ -32,5 +32,10 @@ func (handler grpcHandler) GetModuleByPhonenumber(ctx context.Context, request *
 	return &grpcService.Module{
 		ModuleID:    module.ModuleID,
 		PhoneNumber: module.PhoneNumber,
+		RiverID:     module.RiverID,
+		Location: &grpcService.Point{
+			Latitude:  module.Location.Lat,
+			Longitude: module.Location.Lng,
+		},
 	}, nil
 }

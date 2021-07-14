@@ -27,7 +27,7 @@ func (repo influxRepository) SaveMeasurement(ctx context.Context, message models
 	writeApi := repo.client.WriteAPIBlocking(organizationName, bucketName)
 
 	// TODO: we should add the riverID as a tag for being able to query by river
-	point := influxdb2.NewPointWithMeasurement("water-sensor").AddTag("moduleID", message.ModuleID)
+	point := influxdb2.NewPointWithMeasurement("water-sensor").AddTag("moduleID", message.ModuleID).AddTag("riverID", message.RiverID)
 
 	for _, measurement := range message.Measurements {
 		point = point.AddField(string(measurement.Name), measurement.Value)
