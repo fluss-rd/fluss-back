@@ -23,11 +23,11 @@ db.roles.insert({
     ]
 });
 
-// This is not secure, figure out a way to do it
+// TODO: This is not secure, figure out a way to do it
 db.users.insert({
     _id: "unique-id",
     email: "fluss.rd.admin@gmai.com",
     password: "$2b$10$W8aSBwYLOANnCYUNEhM.runbR4fs7jBT5OPOWJkt7ShddmBfMUxvS",
-    roleName: "superAdmin" 
+    roleName: "superAdmin"
 });
 
