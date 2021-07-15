@@ -13,6 +13,7 @@ import (
 type HTTPHandler interface {
 	handleGetDetailsReportByModule(ctx context.Context) http.HandlerFunc
 	handleGetAllModulesSummary(ctx context.Context) http.HandlerFunc
+	handleGetRiverSummary(ctx context.Context) http.HandlerFunc
 	HandleRoutes(ctx context.Context)
 }
 
@@ -31,6 +32,8 @@ func New(service service.Service, router *mux.Router) HTTPHandler {
 func (handler httpHandler) HandleRoutes(ctx context.Context) {
 	handler.router.Handle("/reports/modules/{id}/details", handler.handleGetDetailsReportByModule(ctx)).Methods(http.MethodGet)
 	handler.router.Handle("/reports/modules", handler.handleGetAllModulesSummary(ctx)).Methods(http.MethodGet)
+
+	handler.router.Handle("/reports/rivers/{id}", handler.handleGetRiverSummary(ctx)).Methods(http.MethodGet)
 }
 
 func (handler httpHandler) handleGetDetailsReportByModule(ctx context.Context) http.HandlerFunc {
@@ -70,5 +73,20 @@ func (handler httpHandler) handleGetAllModulesSummary(ctx context.Context) http.
 		}
 
 		httputils.RespondJSON(rw, http.StatusOK, reports)
+	}
+}
+
+func (handler httpHandler) handleGetRiverSummary(ctx context.Context) http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		riverID := mux.Vars(r)["id"]
+
+		report, err := handler.service.GetRiverSummary(ctx, riverID)
+		if err != nil {
+			log.Println("getting river summary failed")
+			httputils.RespondWithError(rw, err)
+			return
+		}
+
+		httputils.RespondJSON(rw, http.StatusOK, report)
 	}
 }

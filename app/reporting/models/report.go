@@ -7,7 +7,7 @@ import (
 )
 
 type Report struct {
-	ModuleID    string    `json:"moduleID"`
+	ModuleID    string    `json:"moduleID,omitempty"`
 	RiverID     string    `json:"riverID"`
 	Data        []Data    `json:"data"`
 	LastUpdated time.Time `json:"lastUpdated"`

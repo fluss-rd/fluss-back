@@ -51,5 +51,6 @@ func getSearchOptions(r *http.Request) (models.SearchOptions, error) {
 		AggregationWindow: aggregationWindow,
 		Start:             start,
 		End:               end,
+		RiverID:           r.URL.Query().Get("riverID"),
 	}, nil
 }
