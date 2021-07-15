@@ -40,6 +40,12 @@
 
 # Data
 /data
+/mongo-data
+/rabbit-data
+/influx-data
 
 /build
 /secrets
+/rabbit
+/log
+/environment

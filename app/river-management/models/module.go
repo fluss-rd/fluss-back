@@ -33,5 +33,5 @@ type Module struct {
 	UpdateDate   time.Time   `json:"updateDate" bson:"updateDate"`
 	CurrentState ModuleState `json:"state" bson:"state"`
 	Serial       string      `json:"serial" bson:"serial"`
-	Location     Location    `json:"location" bson:"location"`
+	Location     Point       `json:"location" bson:"location"`
 }

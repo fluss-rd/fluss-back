@@ -18,6 +18,8 @@ var (
 	ErrMissingName = httputils.NewBadRequestError("missing name")
 	// ErrMissingUserID missing user id
 	ErrMissingUserID = httputils.NewBadRequestError("missing user id")
+	// ErrMissingLocation missing location
+	ErrMissingLocation = httputils.NewBadRequestError("missing location")
 	// ErrMissingLatitude missing latitude
 	ErrMissingLatitude = httputils.NewBadRequestError("missing latitude")
 	// ErrMissingLongitude missing longitude
@@ -30,8 +32,12 @@ var (
 	ErrMissingModuleID = httputils.NewBadRequestError("missing module id")
 	// ErrInvalidRiver invalid river
 	ErrInvalidRiver = httputils.NewBadRequestError("invalid river")
+	// ErrInvalidBodyType invalid body of water type
+	ErrInvalidBodyType = httputils.NewBadRequestError("invalid body of water type")
 	// ErrInvalidPhoneNumber invalid phone number
 	ErrInvalidPhoneNumber = httputils.NewBadRequestError("invalid phone number")
+	// ErrMissingType missing body of water type
+	ErrMissingType = httputils.NewBadRequestError("missing body of water type")
 	// ErrGeneratingIDFailed generating id failed
 	ErrGeneratingIDFailed = errors.New("generating id failed")
 	// ErrSavingRiverFailed saving river failed
@@ -63,15 +69,36 @@ func (s service) CreateRiver(ctx context.Context, river models.River) (models.Ri
 	}
 
 	// TODO: validate if the user ID exists consuming the accounts service. we should create a client library
-
 	river.RiverID = id
 
 	river, err = s.riversRepo.SaveRiver(ctx, river)
+	if errors.Is(err, riversRepository.ErrDuplicateFields) {
+		return models.River{}, httputils.NewBadRequestError("duplicate name")
+	}
+
 	if err != nil {
 		return models.River{}, fmt.Errorf("%w: %s", ErrSavingRiverFailed, err.Error())
 	}
 
 	return river, nil
+}
+
+func validateRiverLocation(location []models.Point) error {
+	if len(location) == 0 {
+		return ErrMissingLocation
+	}
+
+	for _, point := range location {
+		if point.Lat == 0 {
+			return ErrMissingLatitude
+		}
+
+		if point.Lng == 0 {
+			return ErrMissingLongitude
+		}
+	}
+
+	return nil
 }
 
 func validateCreateRiverFields(river models.River) error {
@@ -83,12 +110,17 @@ func validateCreateRiverFields(river models.River) error {
 		return ErrMissingUserID
 	}
 
-	if river.Location.Lat == 0 {
-		return ErrMissingLatitude
+	err := validateRiverLocation(river.Location)
+	if err != nil {
+		return err
 	}
 
-	if river.Location.Lng == 0 {
-		return ErrMissingLongitude
+	if !models.IsValidBodyType(river.Type) {
+		return ErrInvalidBodyType
+	}
+
+	if river.Type == "" {
+		return ErrMissingType
 	}
 
 	return nil
@@ -106,6 +138,19 @@ func (s service) GetRiversN(ctx context.Context) ([]models.River, error) {
 	}
 
 	return rivers, nil
+}
+
+func (s service) GetRiver(ctx context.Context, id string) (models.River, error) {
+	river, err := s.riversRepo.GetRiver(ctx, id)
+	if errors.Is(err, riversRepository.ErrNotFound) {
+		return models.River{}, httputils.NewNotFoundError("river")
+	}
+
+	if err != nil {
+		return models.River{}, err
+	}
+
+	return river, nil
 }
 
 func (s service) CreateModule(ctx context.Context, module models.Module) (models.Module, error) {
@@ -161,7 +206,7 @@ func validateCreateModuleFields(module models.Module) error {
 		return ErrMissingPhoneNumber
 	}
 
-	if isValidPhoneNumber(module.PhoneNumber) {
+	if !isValidPhoneNumber(module.PhoneNumber) {
 		return ErrInvalidPhoneNumber
 	}
 
@@ -191,6 +236,10 @@ func (s service) GetModule(ctx context.Context, moduleID string) (models.Module,
 	}
 
 	return module, nil
+}
+
+func (s service) GetModuleByPhoneNumber(ctx context.Context, phoneNumber string) (models.Module, error) {
+	return s.modulesRepo.GetModuleByPhoneNumber(ctx, phoneNumber)
 }
 
 func (s service) GetModulesN(ctx context.Context) ([]models.Module, error) {

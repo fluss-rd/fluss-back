@@ -1,7 +1,6 @@
 package router
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -11,9 +10,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/flussrd/fluss-back/app/accounts/shared/httputils"
-	"github.com/flussrd/fluss-back/app/api-gateway/authorization"
 	authRepo "github.com/flussrd/fluss-back/app/api-gateway/repositories/auth"
-	"github.com/gorilla/mux"
 )
 
 var (
@@ -37,56 +34,37 @@ var (
 
 // Endpoint defines an endpoint to be routed
 type Endpoint struct {
-	Path       string
-	RemotePath string
-	RemotHost  string
-	Method     string
-	Authorized bool
+	Path             string
+	RemotePath       string
+	TransportMode    TransportMode
+	RemotHost        string
+	Method           string
+	ExchangeName     string // rabbitmq exchange
+	RoutingKey       string // rabbitmq routing key
+	Authorized       bool
+	Options          EndpointOptions
+	UseSharedOptions bool //TODO: maybe we should think of a way of just using CERTAIN shared options
+
 }
 
-// Router defines the methods for generating routes
-type Router interface {
-	generateRoutes(ctx context.Context) error
+type Endpoints struct {
+	Endpoints     []Endpoint
+	SharedOptions EndpointOptions
 }
 
-type router struct {
-	authRepo  authRepo.Repository
-	endpoints []Endpoint
-	handler   *mux.Router // TODO: REMOVE THIS DEPENDENCY, this is too coupled
+type EndpointOptions struct {
+	*AuthorizerOptions
+	*RouterOptions
 }
 
-// NewRouter returns a new router entity for routing requests
-func NewRouter(ctx context.Context, endpoints []Endpoint, repo authRepo.Repository, handler *mux.Router) (Router, error) {
-	router := &router{
-		endpoints: endpoints,
-		authRepo:  repo,
-		handler:   handler,
-	}
-
-	err := router.generateRoutes(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return router, nil
+type AuthorizerOptions struct {
+	AuthType         AuthorizerType
+	JWTSigningMethod jwt.SigningMethod
+	JwtSigningSecret string
+	AuthRepo         authRepo.Repository
 }
 
-func (r *router) generateRoutes(ctx context.Context) error {
-	for _, endpoint := range r.endpoints {
-		remoteURL, err := url.Parse(endpoint.RemotHost + endpoint.RemotePath)
-		if err != nil {
-			return fmt.Errorf("%w: %s", ErrParseURLFailed, err.Error())
-		}
-
-		if endpoint.Authorized {
-			r.handler.Handle(endpoint.Path, authMiddleware(ctx, endpoint, handleRequest(endpoint, remoteURL), r.authRepo)).Methods(endpoint.Method)
-			continue
-		}
-
-		r.handler.Handle(endpoint.Path, handleRequest(endpoint, remoteURL)).Methods(endpoint.Method)
-	}
-
-	return nil
+type RouterOptions struct {
 }
 
 func modifyRequest(r *http.Request, remoteURL *url.URL) {
@@ -121,88 +99,6 @@ func setupPreflightResponse(w *http.ResponseWriter, req *http.Request) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, PATCH")
 	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-}
-
-func handleRequest(endpoint Endpoint, remoteURL *url.URL) http.HandlerFunc {
-	return func(rw http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodOptions {
-			setupPreflightResponse(&rw, r)
-			return
-		}
-
-		remoteURL, err := getActualURL(endpoint, mux.Vars(r))
-		if err != nil {
-			fmt.Println("failed to get url: " + err.Error())
-			httputils.RespondInternalServerError(rw)
-			return
-		}
-
-		remoteHostURL, err := url.Parse(endpoint.RemotHost)
-		if err != nil {
-			fmt.Println("failed to get url: " + err.Error())
-			httputils.RespondInternalServerError(rw)
-			return
-		}
-
-		proxy, err := getProxy(remoteHostURL)
-		if err != nil {
-			fmt.Println("failed to get proxy: " + err.Error())
-			httputils.RespondInternalServerError(rw)
-			return
-		}
-
-		modifyRequest(r, remoteURL)
-		proxy.ServeHTTP(rw, r)
-	}
-}
-
-func getToken(r http.Request) (string, error) {
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		return "", httputils.UnauthorizedError
-	}
-
-	splittedToken := strings.Split(authHeader, "Bearer ")
-	if len(splittedToken) < 2 {
-		return "", httputils.UnauthorizedError
-	}
-
-	return splittedToken[1], nil
-}
-
-func authMiddleware(ctx context.Context, endpoint Endpoint, handler http.HandlerFunc, repo authRepo.Repository) http.HandlerFunc {
-	return func(rw http.ResponseWriter, r *http.Request) {
-		token, err := getToken(*r)
-		if err != nil {
-			httputils.RespondWithError(rw, err)
-			return
-		}
-
-		resource, err := getResourceFromEndpoint(endpoint)
-		if err != nil {
-			httputils.RespondWithError(rw, err)
-			return
-		}
-
-		action, err := getActionFromMethod(r.Method)
-		if err != nil {
-			httputils.RespondWithError(rw, err)
-			return
-		}
-
-		authorizer := authorization.NewAuthorizer(repo, jwt.SigningMethodHS256)
-
-		// TODO: handle error, this can be a reason to return 500
-		isAuthorized, sub, _ := authorizer.Validate(ctx, token, resource, action)
-		if !isAuthorized {
-			httputils.RespondWithError(rw, httputils.ForbiddenError)
-			return
-		}
-
-		r.Header["sub"] = []string{sub}
-
-		handler.ServeHTTP(rw, r)
-	}
 }
 
 func getResourceFromEndpoint(endpoint Endpoint) (string, error) {

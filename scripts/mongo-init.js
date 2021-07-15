@@ -11,6 +11,7 @@ db.createCollection("rivers");
 db.roles.createIndex({ roleName: 1 }, { unique: true });
 db.users.createIndex({ email: 1 }, { unique: true });
 db.modules.createIndex({ riverID: 1,  alias: 1}, { unique: true });
+db.modules.createIndex({ phoneNumber: 1}, { unique: true });
 db.rivers.createIndex({ name: 1 }, { unique: true });
 
 db.roles.insert({
