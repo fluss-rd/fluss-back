@@ -31,7 +31,7 @@ type AppConfig struct {
 	DatabaseConfig struct {
 		DatabaseType string `yaml:"databaseType" validate:"required" env:"APPCONFIG_REPOSITORYCONFIG_DATABASETYPE,required"`
 		Connection   string `yaml:"connection" validate:"required" env:"APPCONFIG_REPOSITORYCONFIG_CONNECTION,required"`
-		DatabseName  string `yaml:"databaseName" validate:"required" env:"APPCONFIG_REPOSITORYCONFIG_DATABASENAME,required"`
+		DatabaseName  string `yaml:"databaseName" validate:"required" env:"APPCONFIG_REPOSITORYCONFIG_DATABASENAME,required"`
 	} `yaml:"databaseConfig"`
 }
 
