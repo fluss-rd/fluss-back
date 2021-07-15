@@ -10,6 +10,7 @@ import (
 
 	"github.com/flussrd/fluss-back/app/reporting/models"
 	repository "github.com/flussrd/fluss-back/app/reporting/repositories/reports"
+	calculator "github.com/flussrd/fluss-back/app/shared/wqi-calculator"
 )
 
 const (
@@ -40,7 +41,6 @@ func buildGetDataByModuleQuery(moduleID string, options models.SearchOptions) st
 	start := "-48h" // we're defaulting the last 48 hours
 	stop := "now()"
 
-	fmt.Println(options.Start.IsZero())
 	if !options.Start.IsZero() {
 		start = fmt.Sprint(options.Start.Format(time.RFC3339))
 	}
@@ -59,8 +59,6 @@ func buildGetDataByModuleQuery(moduleID string, options models.SearchOptions) st
 		query += fmt.Sprintf(`|> aggregateWindow(every: %s, fn: %s, createEmpty: false)`, options.Cardinality, options.AggregationWindow)
 		query += fmt.Sprintf(`|> yield(name: "%s")`, options.AggregationWindow)
 	}
-
-	fmt.Println(query)
 
 	return query
 }
@@ -106,6 +104,7 @@ func (repo influxRepository) GetDataByModule(ctx context.Context, moduleID strin
 			dataPerModuleAndTime[key].LastDate = result.Record().Time()
 		}
 
+		// We're grouping locations by data groups
 		if locationPerModuleAndTime[key] == nil {
 			locationPerModuleAndTime[key] = map[string]float64{}
 		}
@@ -114,11 +113,13 @@ func (repo influxRepository) GetDataByModule(ctx context.Context, moduleID strin
 		if result.Record().Field() == "lat" {
 			lat, _ := result.Record().Value().(float64)
 			locationPerModuleAndTime[key]["lat"] = lat
+			continue
 		}
 
 		if result.Record().Field() == "lng" {
 			lng, _ := result.Record().Value().(float64)
 			locationPerModuleAndTime[key]["lng"] = lng
+			continue
 		}
 
 		if parameters[key] == nil {
@@ -126,9 +127,10 @@ func (repo influxRepository) GetDataByModule(ctx context.Context, moduleID strin
 		}
 
 		parameters[key] = append(parameters[key], models.Parameter{
-			Name:  result.Record().Field(),
-			Value: result.Record().Value().(float64),
-			Date:  result.Record().Time(),
+			Parameter: calculator.Parameter{
+				Name:  calculator.ParameterType(result.Record().Field()),
+				Value: result.Record().Value().(float64)},
+			Date: result.Record().Time(),
 		})
 	}
 
@@ -160,4 +162,76 @@ func (repo influxRepository) GetDataByModule(ctx context.Context, moduleID strin
 	report.Data = datas
 
 	return *report, nil
+}
+
+func buildGetAllModulesSummaryQuery(options models.SearchOptions) string {
+	query := fmt.Sprintf(`from(bucket: "%s")`, bucketName)
+	query += "|> range(start: -24h, stop: now())" // we're making this a day cause we want the last one for each module in the last day, just to get one. Is this business logic?
+	query += `|> filter(fn: (r) => r["_measurement"] == "water-sensor")`
+
+	if options.RiverID != "" {
+		query += fmt.Sprintf(`|> filter(fn: (r) => r["riverID"] == "%s")`, options.RiverID)
+	}
+
+	query += `|> last()`
+
+	return query
+}
+
+func (repo influxRepository) GetAllModulesSummary(ctx context.Context, options models.SearchOptions) ([]models.Report, error) {
+	queryAPI := repo.client.QueryAPI(organizationName)
+
+	query := buildGetAllModulesSummaryQuery(options)
+
+	result, err := queryAPI.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+
+	reportsPerModule := map[string]*models.Report{} // oinly one cause we're only getting the last one
+
+	for result.Next() {
+		// TODO: add error handling for the case when !ok
+		moduleID, _ := result.Record().ValueByKey("moduleID").(string)
+		riverID, _ := result.Record().ValueByKey("riverID").(string)
+
+		// This hast to go first to ensure report is not nil and the data array is not empty
+		if reportsPerModule[moduleID] == nil {
+			reportsPerModule[moduleID] = &models.Report{
+				ModuleID: moduleID,
+				RiverID:  riverID,
+				Data:     []models.Data{{}}, // Only one, just the last one
+			}
+		}
+
+		if result.Record().Field() == "lat" {
+			lat, _ := result.Record().Value().(float64)
+			reportsPerModule[moduleID].Data[0].Location.Latitude = lat
+			continue
+		}
+
+		if result.Record().Field() == "lng" {
+			lng, _ := result.Record().Value().(float64)
+			reportsPerModule[moduleID].Data[0].Location.Longitude = lng
+			continue
+		}
+
+		reportsPerModule[moduleID].Data[0].Parameters = append(reportsPerModule[moduleID].Data[0].Parameters, models.Parameter{
+			Parameter: calculator.Parameter{
+				Name:  calculator.ParameterType(result.Record().Field()),
+				Value: result.Record().Value().(float64), // TODO: error handling
+			},
+			Date: result.Record().Time(),
+		})
+	}
+
+	output := make([]models.Report, len(reportsPerModule))
+
+	index := 0
+	for _, v := range reportsPerModule {
+		output[index] = *v
+		index++
+	}
+
+	return output, nil
 }

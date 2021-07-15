@@ -12,6 +12,7 @@ import (
 
 type HTTPHandler interface {
 	handleGetDetailsReportByModule(ctx context.Context) http.HandlerFunc
+	handleGetAllModulesSummary(ctx context.Context) http.HandlerFunc
 	HandleRoutes(ctx context.Context)
 }
 
@@ -29,6 +30,7 @@ func New(service service.Service, router *mux.Router) HTTPHandler {
 
 func (handler httpHandler) HandleRoutes(ctx context.Context) {
 	handler.router.Handle("/reports/modules/{id}/details", handler.handleGetDetailsReportByModule(ctx)).Methods(http.MethodGet)
+	handler.router.Handle("/reports/modules", handler.handleGetAllModulesSummary(ctx)).Methods(http.MethodGet)
 }
 
 func (handler httpHandler) handleGetDetailsReportByModule(ctx context.Context) http.HandlerFunc {
@@ -49,5 +51,24 @@ func (handler httpHandler) handleGetDetailsReportByModule(ctx context.Context) h
 		}
 
 		httputils.RespondJSON(rw, http.StatusOK, report)
+	}
+}
+
+func (handler httpHandler) handleGetAllModulesSummary(ctx context.Context) http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		options, err := getSearchOptions(r)
+		if err != nil {
+			httputils.RespondWithError(rw, err)
+			return
+		}
+
+		reports, err := handler.service.GetAllModulesSummary(ctx, options)
+		if err != nil {
+			log.Println("getting all modules summary failed: ", err.Error())
+			httputils.RespondWithError(rw, err)
+			return
+		}
+
+		httputils.RespondJSON(rw, http.StatusOK, reports)
 	}
 }

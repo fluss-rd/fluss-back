@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/flussrd/fluss-back/app/river-management/handlers/grpc/grpchandler"
 	riverGrpcClient "github.com/flussrd/fluss-back/app/shared/grpc-clients/river-management"
@@ -34,6 +35,14 @@ func (s service) SaveMeasurement(ctx context.Context, message models.Message) er
 	if err != nil {
 		fmt.Println("getting_module_by_phone_number_failed: ", err.Error())
 		return err
+	}
+
+	// TODO: add broken or not field on message
+
+	// Ignore the message
+	if module.Currentstate == "inactive" {
+		log.Println("Ignoring message since the module is supposed to be inactive")
+		return nil
 	}
 
 	wqi := wqiCalculator.GetWQI(message.Measurements)

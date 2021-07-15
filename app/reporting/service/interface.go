@@ -7,5 +7,6 @@ import (
 )
 
 type Service interface {
+	GetAllModulesSummary(ctx context.Context, options models.SearchOptions) ([]models.Report, error)
 	GetDetailsReportByModule(ctx context.Context, moduleID string, options models.SearchOptions) (models.Report, error)
 }

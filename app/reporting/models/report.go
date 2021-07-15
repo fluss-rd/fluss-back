@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	calculator "github.com/flussrd/fluss-back/app/shared/wqi-calculator"
+)
 
 type Report struct {
 	ModuleID    string    `json:"moduleID"`
@@ -11,15 +15,15 @@ type Report struct {
 }
 
 type Data struct {
+	WQI        float64     `json:"wqi"`
 	LastDate   time.Time   `json:"lastDate"`
 	Parameters []Parameter `json:"parameters"`
 	Location   Location    `json:"location"`
 }
 
 type Parameter struct {
-	Name  string    `json:"name"`
-	Value float64   `json:"value"`
-	Date  time.Time `json:"date"`
+	calculator.Parameter
+	Date time.Time `json:"date"`
 }
 
 type Location struct {

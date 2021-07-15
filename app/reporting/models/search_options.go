@@ -10,6 +10,7 @@ var validAggregationWindows = map[string]bool{
 }
 
 type SearchOptions struct {
+	RiverID           string    `json:"riverID"`
 	Cardinality       string    `json:"cardinality"`
 	AggregationWindow string    `json:"aggregationWindow"`
 	Start             time.Time `json:"start"`
