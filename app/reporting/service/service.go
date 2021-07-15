@@ -18,5 +18,5 @@ func New(repo repository.Repository) Service {
 }
 
 func (s service) GetDetailsReportByModule(ctx context.Context, moduleID string, options models.SearchOptions) (models.Report, error) {
-	return s.repo.GetDataByModule(ctx, moduleID)
+	return s.repo.GetDataByModule(ctx, moduleID, options)
 }

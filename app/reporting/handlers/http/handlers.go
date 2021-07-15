@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/flussrd/fluss-back/app/accounts/shared/httputils"
-	"github.com/flussrd/fluss-back/app/reporting/models"
 	"github.com/flussrd/fluss-back/app/reporting/service"
 	"github.com/gorilla/mux"
 )
@@ -36,9 +35,10 @@ func (handler httpHandler) handleGetDetailsReportByModule(ctx context.Context) h
 	return func(rw http.ResponseWriter, r *http.Request) {
 		moduleID := mux.Vars(r)["id"]
 
-		options := models.SearchOptions{
-			Cardinality:       r.URL.Query().Get("cardinality"),
-			AggregationWindow: r.URL.Query().Get("aggregateWindow"),
+		options, err := getSearchOptions(r)
+		if err != nil {
+			httputils.RespondWithError(rw, err)
+			return
 		}
 
 		report, err := handler.service.GetDetailsReportByModule(ctx, moduleID, options)

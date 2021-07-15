@@ -11,14 +11,15 @@ type Report struct {
 }
 
 type Data struct {
-	Date       time.Time   `json:"date"`
+	LastDate   time.Time   `json:"lastDate"`
 	Parameters []Parameter `json:"parameters"`
 	Location   Location    `json:"location"`
 }
 
 type Parameter struct {
-	Name  string
-	Value float64
+	Name  string    `json:"name"`
+	Value float64   `json:"value"`
+	Date  time.Time `json:"date"`
 }
 
 type Location struct {

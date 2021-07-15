@@ -40,6 +40,9 @@ func (s service) SaveMeasurement(ctx context.Context, message models.Message) er
 
 	message.Measurements = append(message.Measurements, models.Measurement{Name: "wqi", Value: wqi})
 
+	message.Measurements = append(message.Measurements, models.Measurement{Name: "lat", Value: module.Location.Latitude})
+	message.Measurements = append(message.Measurements, models.Measurement{Name: "lng", Value: module.Location.Longitude})
+
 	message.ModuleID = module.ModuleID
 	message.RiverID = module.RiverID
 

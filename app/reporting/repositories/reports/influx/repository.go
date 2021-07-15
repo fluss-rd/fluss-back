@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"fmt"
+	"sort"
+	"time"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 
@@ -12,6 +14,7 @@ import (
 
 const (
 	organizationName = "Fluss"
+	bucketName       = "modules-data"
 )
 
 type influxRepository struct {
@@ -24,22 +27,48 @@ func New(client influxdb2.Client) repository.Repository {
 	}
 }
 
-func (repo influxRepository) GetDataByModule(ctx context.Context, moduleID string) (models.Report, error) {
-	// URGENT TODO: add the wqi to the measurement
-	queryAPI := repo.client.QueryAPI(organizationName)
-
+func buildGetDataByModuleQuery(moduleID string, options models.SearchOptions) string {
 	// query := `from(bucket: "modules-data")
 	// |> range(start: -48h, stop: now())
 	// |> filter(fn: (r) => r["_measurement"] == "water-sensor")
+	// |> filter(fn: (r) => r["moduleID"] == "MDL8dab9bcded8b4a0a9b18a9b8e2e0c758")
 	// |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)
 	// |> yield(name: "mean")`
 
-	query := `from(bucket: "modules-data")
-	|> range(start: -48h, stop: now())
-	|> filter(fn: (r) => r["_measurement"] == "water-sensor")
-	|> filter(fn: (r) => r["moduleID"] == "MDL8dab9bcded8b4a0a9b18a9b8e2e0c758")
-	|> aggregateWindow(every: 1h, fn: mean, createEmpty: false)
-	|> yield(name: "mean")`
+	query := fmt.Sprintf(`from(bucket: "%s")`, bucketName)
+
+	start := "-48h" // we're defaulting the last 48 hours
+	stop := "now()"
+
+	fmt.Println(options.Start.IsZero())
+	if !options.Start.IsZero() {
+		start = fmt.Sprint(options.Start.Format(time.RFC3339))
+	}
+
+	if !options.End.IsZero() {
+		stop = fmt.Sprint(options.End.Format(time.RFC3339))
+	}
+
+	query += fmt.Sprintf(`|> range(start: %s, stop: %s)`, start, stop)
+
+	query += `|> filter(fn: (r) => r["_measurement"] == "water-sensor")`
+
+	query += fmt.Sprintf(`|> filter(fn: (r) => r["moduleID"] == "%s")`, moduleID)
+
+	if options.Cardinality != "" && options.AggregationWindow != "" {
+		query += fmt.Sprintf(`|> aggregateWindow(every: %s, fn: %s, createEmpty: false)`, options.Cardinality, options.AggregationWindow)
+		query += fmt.Sprintf(`|> yield(name: "%s")`, options.AggregationWindow)
+	}
+
+	fmt.Println(query)
+
+	return query
+}
+
+func (repo influxRepository) GetDataByModule(ctx context.Context, moduleID string, searchOptions models.SearchOptions) (models.Report, error) {
+	queryAPI := repo.client.QueryAPI(organizationName)
+
+	query := buildGetDataByModuleQuery(moduleID, searchOptions)
 
 	result, err := queryAPI.Query(ctx, query)
 	if err != nil {
@@ -52,6 +81,11 @@ func (repo influxRepository) GetDataByModule(ctx context.Context, moduleID strin
 	parameters := map[string][]models.Parameter{}
 
 	for result.Next() {
+		riverID, _ := result.Record().ValueByKey("riverID").(string)
+		if riverID == "" {
+			continue
+		}
+
 		if report == nil {
 			riverID, _ := result.Record().ValueByKey("riverID").(string)
 			moduleID, _ := result.Record().ValueByKey("moduleID").(string)
@@ -64,8 +98,12 @@ func (repo influxRepository) GetDataByModule(ctx context.Context, moduleID strin
 		key := fmt.Sprintf("%v:%s", result.Record().ValueByKey("moduleID"), result.Record().Time().String())
 		if dataPerModuleAndTime[key] == nil {
 			dataPerModuleAndTime[key] = &models.Data{
-				Date: result.Record().Time(),
+				LastDate: result.Record().Time(),
 			}
+		}
+
+		if result.Record().Time().After(dataPerModuleAndTime[key].LastDate) {
+			dataPerModuleAndTime[key].LastDate = result.Record().Time()
 		}
 
 		if locationPerModuleAndTime[key] == nil {
@@ -90,7 +128,12 @@ func (repo influxRepository) GetDataByModule(ctx context.Context, moduleID strin
 		parameters[key] = append(parameters[key], models.Parameter{
 			Name:  result.Record().Field(),
 			Value: result.Record().Value().(float64),
+			Date:  result.Record().Time(),
 		})
+	}
+
+	if len(parameters) == 0 {
+		return models.Report{}, nil
 	}
 
 	// Assigning parameters and location to data
@@ -108,6 +151,11 @@ func (repo influxRepository) GetDataByModule(ctx context.Context, moduleID strin
 	for _, v := range dataPerModuleAndTime {
 		datas = append(datas, *v)
 	}
+
+	// Ugly, i know, but the parsing technique with the maps screws the order up :(
+	sort.Slice(datas, func(i, j int) bool {
+		return datas[i].LastDate.Before(datas[j].LastDate)
+	})
 
 	report.Data = datas
 
