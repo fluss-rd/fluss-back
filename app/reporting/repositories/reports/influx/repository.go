@@ -190,6 +190,8 @@ func (repo influxRepository) GetAllModulesSummary(ctx context.Context, options m
 
 	reportsPerModule := map[string]*models.Report{} // oinly one cause we're only getting the last one
 
+	lastDatePerModule := map[string]time.Time{}
+
 	for result.Next() {
 		// TODO: add error handling for the case when !ok
 		moduleID, _ := result.Record().ValueByKey("moduleID").(string)
@@ -204,6 +206,14 @@ func (repo influxRepository) GetAllModulesSummary(ctx context.Context, options m
 			}
 		}
 
+		// if lastDatePerModule[moduleID].IsZero() {
+		// 	lastDatePerModule[moduleID] = result.Record().Time()
+		// }
+
+		if result.Record().Time().After(lastDatePerModule[moduleID]) {
+			lastDatePerModule[moduleID] = result.Record().Time()
+		}
+
 		if result.Record().Field() == "lat" {
 			lat, _ := result.Record().Value().(float64)
 			reportsPerModule[moduleID].Data[0].Location.Latitude = lat
@@ -216,13 +226,22 @@ func (repo influxRepository) GetAllModulesSummary(ctx context.Context, options m
 			continue
 		}
 
-		reportsPerModule[moduleID].Data[0].Parameters = append(reportsPerModule[moduleID].Data[0].Parameters, models.Parameter{
-			Parameter: calculator.Parameter{
-				Name:  calculator.ParameterType(result.Record().Field()),
-				Value: result.Record().Value().(float64), // TODO: error handling
-			},
-			Date: result.Record().Time(),
-		})
+		if calculator.IsValidParamType(calculator.ParameterType(result.Record().Field())) {
+			reportsPerModule[moduleID].Data[0].Parameters = append(reportsPerModule[moduleID].Data[0].Parameters, models.Parameter{
+				Parameter: calculator.Parameter{
+					Name:  calculator.ParameterType(result.Record().Field()),
+					Value: result.Record().Value().(float64), // TODO: error handling
+				},
+				Date: result.Record().Time(),
+			})
+		}
+	}
+
+	for key := range reportsPerModule {
+		reportsPerModule[key].LastUpdated = lastDatePerModule[key]
+		for index, _ := range reportsPerModule[key].Data {
+			reportsPerModule[key].Data[index].LastDate = lastDatePerModule[key]
+		}
 	}
 
 	output := make([]models.Report, len(reportsPerModule))

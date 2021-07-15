@@ -61,6 +61,7 @@ func addWQIToReports(reports []models.Report) []models.Report {
 		for j, data := range report.Data {
 			wqi := indexCalculator.GetWQI(toCalculatorParams(data.Parameters))
 			reports[index].Data[j].WQI = wqi
+			reports[index].Data[j].WQIClassification = indexCalculator.GetWQIClassification(wqi)
 		}
 	}
 

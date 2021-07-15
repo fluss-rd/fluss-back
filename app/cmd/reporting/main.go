@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -24,6 +25,7 @@ func init() {
 }
 
 func main() {
+	fmt.Println(time.Now())
 	ctx := context.Background()
 
 	router := mux.NewRouter()

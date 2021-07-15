@@ -10,15 +10,15 @@ type Report struct {
 	ModuleID    string    `json:"moduleID"`
 	RiverID     string    `json:"riverID"`
 	Data        []Data    `json:"data"`
-	Location    float64   `json:"location"`
 	LastUpdated time.Time `json:"lastUpdated"`
 }
 
 type Data struct {
-	WQI        float64     `json:"wqi"`
-	LastDate   time.Time   `json:"lastDate"`
-	Parameters []Parameter `json:"parameters"`
-	Location   Location    `json:"location"`
+	WQI               float64     `json:"wqi"`
+	WQIClassification string      `json:"wqiClassification"`
+	LastDate          time.Time   `json:"lastDate"`
+	Parameters        []Parameter `json:"parameters"`
+	Location          Location    `json:"location"`
 }
 
 type Parameter struct {
