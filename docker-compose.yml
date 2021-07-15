@@ -50,6 +50,14 @@ services:
       - influxdb
       - rabbit
       - river-management
+  reporting:
+    env_file:
+      - environment/reporting.local.env
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.reporting
+    depends_on:
+      - influxdb
   db:
     image: mongo
     volumes:

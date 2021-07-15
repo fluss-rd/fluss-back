@@ -212,6 +212,32 @@ var endpoints = []router.Endpoints{
 				ExchangeName:  "modules-messages",
 				RoutingKey:    "",
 			},
+			// ----------------------------------------------------------
+			// reports service
+			{
+				Path:          `/reports/rivers/{id}`,
+				RemotePath:    `/reports/rivers/{id}`,
+				RemotHost:     "http://reporting:5000",
+				Method:        http.MethodGet,
+				Authorized:    false, //TODO: error handling when this is true an and no autorizer options are provided
+				TransportMode: router.TransportModeHTTP,
+			},
+			{
+				Path:          `/reports/modules`,
+				RemotePath:    `/reports/modules`,
+				RemotHost:     "http://reporting:5000",
+				Method:        http.MethodGet,
+				Authorized:    false, //TODO: error handling when this is true an and no autorizer options are provided
+				TransportMode: router.TransportModeHTTP,
+			},
+			{
+				Path:          `/reports/modules/{id}/details`,
+				RemotePath:    `/reports/modules/{id}/details`,
+				RemotHost:     "http://reporting:5000",
+				Method:        http.MethodGet,
+				Authorized:    false, //TODO: error handling when this is true an and no autorizer options are provided
+				TransportMode: router.TransportModeHTTP,
+			},
 		},
 		SharedOptions: router.EndpointOptions{
 			AuthorizerOptions: &router.AuthorizerOptions{
