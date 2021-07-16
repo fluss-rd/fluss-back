@@ -7,7 +7,7 @@ import (
 
 	"github.com/flussrd/fluss-back/app/river-management/handlers/grpc/grpchandler"
 	riverGrpcClient "github.com/flussrd/fluss-back/app/shared/grpc-clients/river-management"
-	calculator "github.com/flussrd/fluss-back/app/telemetry/lib/wqi-calculator"
+	calculator "github.com/flussrd/fluss-back/app/shared/wqi-calculator"
 	"github.com/flussrd/fluss-back/app/telemetry/models"
 	repository "github.com/flussrd/fluss-back/app/telemetry/repositories/measurements"
 )

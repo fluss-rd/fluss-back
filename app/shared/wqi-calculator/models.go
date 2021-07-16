@@ -3,7 +3,6 @@ package calculator
 type ParameterType string
 
 const (
-	// TODO: maybe change this to parameter?
 	// ParameterTypePH is a ParameterType for the pH level of the water.
 	ParameterTypePH ParameterType = "ph"
 	// ParameterTypeDO is a ParameterType for the concentration of oxygen that is dissolved in the water (Dissolved Oxygen).

@@ -17,11 +17,18 @@ var (
 
 var (
 	// From "Analytical Studies on Water Quality Index of River Landzu", table 2
-	permissibleValues = map[ParameterType]float64{
+	standardValues = map[ParameterType]float64{
+		ParameterTypePH:  7.5,
+		ParameterTypeTDS: 500, // measured in mg/litre
+		ParameterTypeTDY: 10, // measured in NTUs
+		ParameterTypeDO:  5, // measured in mg/litre
+	}
+
+	idealValues = map[ParameterType]float64{
 		ParameterTypePH:  7,
-		ParameterTypeTDS: 500,
-		ParameterTypeTDY: 10, // arbitrary, from Ivan's scale
-		ParameterTypeDO:  5,
+		ParameterTypeTDS: 0,
+		ParameterTypeTDY: 0,
+		ParameterTypeDO:  20, // 20 is the max the sensor can read
 	}
 )
 

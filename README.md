@@ -1,6 +1,11 @@
 # fluss-back
 Fluss backend services
 
+## How was the WQI calculated?
+To know more about the formula and the underlying theory, see the following article:
+[A comparison between weighted arithmetic and Canadian
+methods for a drinking water quality index at selected
+locations in shatt al-kufa](https://iopscience.iop.org/article/10.1088/1757-899X/433/1/012026/pdf)
 
 ## How to run the project?
 
@@ -20,3 +25,9 @@ Make sure docker is running or restart it in case it didn't start properly with 
 To rebuild an image you must use `docker-compose build` or `docker-compose up --build`.
 
 You could assume that is the main file of all app/cmd/api-gateway/main.go
+
+# Common Errors
+
+## problems with docker-component up rabbit
+
+- make sure this file exists: /etc/rabbitmq/definitions.json

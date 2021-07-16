@@ -1,10 +1,14 @@
 package calculator
 
+import (
+	"math"
+)
+
 var (
 	waiUsedValues = map[ParameterType]bool{
 		ParameterTypePH:  true,
 		ParameterTypeTDS: true,
-		ParameterTypeTDY: true, // arbitrary, from Ivan's scale
+		ParameterTypeTDY: true,
 		ParameterTypeDO:  true,
 	}
 )
@@ -15,8 +19,20 @@ type waiCalculator struct {
 }
 
 func (calculator waiCalculator) GetWQI(parameters []Parameter) float64 {
-	wqSum := 0.0
 	wSum := 0.0
+	OverallWQI := 0.0
+	k := 0.0
+
+	for measurementType, value := range standardValues {
+		if !calculator.shouldUseParam(measurementType) {
+			continue
+		}
+
+		w := (1.0 / value)
+		wSum += w
+	}
+
+	k = 1.0 / wSum
 
 	// quality rating scale. generation of the parameter sub-indices: parameter concentrations are converted to unit less sub-indices
 	for _, param := range parameters {
@@ -24,17 +40,13 @@ func (calculator waiCalculator) GetWQI(parameters []Parameter) float64 {
 			continue
 		}
 
-		permissibleValue := permissibleValues[param.Name]
-		w := (1 / permissibleValue)
+		qi := ( math.Abs(param.Value - idealValues[param.Name]) ) / ( math.Abs(standardValues[param.Name] - idealValues[param.Name]) ) * 100.0
+		wi := k / standardValues[param.Name]
 
-		q := (param.Value / permissibleValue) * 100
-
-		// agregation
-		wSum += w
-		wqSum += w * q
+		OverallWQI += (wi * qi)
 	}
 
-	return wqSum / wSum // overall
+	return OverallWQI
 }
 
 func (calculator waiCalculator) shouldUseParam(paramName ParameterType) bool {

@@ -25,6 +25,7 @@ var validBodytTypes = map[BodyType]bool{
 
 // River represents a physical river which is going to be measured
 type River struct {
+	// TODO: RiverID should be WaterBodyID
 	RiverID      string    `json:"riverID" bson:"_id"` // This is "coupling" bewteen the models and mongo
 	Name         string    `json:"name" bson:"name"`
 	Location     []Point   `json:"location" bson:"location"`
