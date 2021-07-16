@@ -37,3 +37,8 @@ type Module struct {
 	Serial       string      `json:"serial" bson:"serial"`
 	Location     Point       `json:"location" bson:"location"`
 }
+
+type ModuleUpdateOptions struct {
+	Status   ModuleState
+	ModuleID string
+}

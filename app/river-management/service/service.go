@@ -266,6 +266,17 @@ func (s service) GetModulesN(ctx context.Context) ([]models.Module, error) {
 	return modules, nil
 }
 
+func (s service) UpdateModuleSatus(ctx context.Context, moduleID string, status models.ModuleState) (models.Module, error) {
+	options := models.ModuleUpdateOptions{
+		ModuleID: moduleID,
+		Status:   status,
+	}
+
+	err := s.modulesRepo.UpdateModule(ctx, options)
+
+	return models.Module{}, err
+}
+
 func (s service) GetModulesByRiverN(ctx context.Context, riverID string) ([]models.Module, error) {
 	return nil, nil
 }

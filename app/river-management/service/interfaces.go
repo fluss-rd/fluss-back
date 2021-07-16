@@ -20,6 +20,7 @@ type ModulesUsecases interface {
 	GetModuleByPhoneNumber(ctx context.Context, phoneNumber string) (models.Module, error)
 	GetModulesN(ctx context.Context) ([]models.Module, error)                        // no pagination
 	GetModulesByRiverN(ctx context.Context, riverID string) ([]models.Module, error) // no pagination
+	UpdateModuleSatus(ctx context.Context, moduleID string, status models.ModuleState) (models.Module, error)
 }
 
 // Service defines the method for the service/usecase layer
