@@ -13,8 +13,10 @@ type ModuleState string
 const (
 	// ModuleStateActive the module is fully working and reporting data
 	ModuleStateActive = "active"
-	// ModuleStateInactive the module was deactiviated and data sent from it will not be stored
+	// ModuleStateInactive the default state of a module when its created but hasnt started sending data
 	ModuleStateInactive = "inactive"
+	// ModuleStateDeactivated when the module was deactivated and we will not process further messages
+	ModuleStateDeactivated = "deactivated"
 	// ModuleStateDeleted the module was deleted
 	ModuleStateDeleted = "deleted"
 	// ModuleStateBroken the module has been presenting technical issues

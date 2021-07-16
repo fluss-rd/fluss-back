@@ -37,11 +37,12 @@ func (s service) SaveMeasurement(ctx context.Context, message models.Message) er
 		return err
 	}
 
+	// TODO: when a inactive module (default state) message has arrived, we must activate it. river-management service should expose a grpc method for that
 	// TODO: add broken or not field on message
 
 	// Ignore the message
-	if module.Currentstate == "inactive" {
-		log.Println("Ignoring message since the module is supposed to be inactive")
+	if module.Currentstate == "deactivated" {
+		log.Println("Ignoring message since the module is deactivated")
 		return nil
 	}
 
