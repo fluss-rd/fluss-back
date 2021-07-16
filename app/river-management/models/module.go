@@ -26,7 +26,9 @@ type Module struct {
 	ModuleID     string      `json:"moduleID" bson:"_id"`
 	PhoneNumber  string      `json:"phoneNumber" bson:"phoneNumber"`
 	Alias        string      `json:"alias" bson:"alias"`
+	// TODO: RiverID should be WaterBodyID
 	RiverID      string      `json:"riverID" bson:"riverID"`
+	// TODO: RiverName should be WaterBodyName
 	RiverName    string      `json:"riverName" bson:"riverName"`
 	UserID       string      `json:"userID" bson:"userID"`
 	CreationDate time.Time   `json:"creationDate" bson:"creationDate"`
