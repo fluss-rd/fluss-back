@@ -256,14 +256,14 @@ func (repo influxRepository) GetAllModulesSummary(ctx context.Context, options m
 }
 
 func buildGetRiverSummaryQuery(riverID string) string {
-	query := `times = from(bucket: "modules-data")
+	query := fmt.Sprintf(`times = from(bucket: "modules-data")
     |> range(start: -24h, stop: now())
-    |> filter(fn: (r) => r["_measurement"] == "water-sensor" and r["riverID"] == "RVRf12b9f172a294bfba5c52219c2b55523")
+    |> filter(fn: (r) => r["_measurement"] == "water-sensor" and r["riverID"] == "%s")
     |> last()
     |> group(columns: ["moduleID"], mode:"by")
     |> group(columns: ["_field"], mode:"by")
     |> max(column: "_time")
-	|> keep(columns: ["_time", "_field"])`
+	|> keep(columns: ["_time", "_field"])`, riverID)
 
 	query += fmt.Sprintf(`averages = from(bucket: "modules-data")
 	|> range(start: 0, stop: now())
