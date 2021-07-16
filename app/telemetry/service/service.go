@@ -53,7 +53,7 @@ func (s service) SaveMeasurement(ctx context.Context, message models.Message) er
 		return nil
 	}
 
-	wqi := wqiCalculator.GetWQI(message.Measurements)
+	wqi := wqiCalculator.GetWQI(toCalculatorParams(message.Measurements))
 
 	message.Measurements = append(message.Measurements, models.Measurement{Name: "wqi", Value: wqi})
 
@@ -65,4 +65,15 @@ func (s service) SaveMeasurement(ctx context.Context, message models.Message) er
 
 	// TODO: handle the repo errors
 	return s.repo.SaveMeasurement(ctx, message)
+}
+
+func toCalculatorParams(params []models.Measurement) []calculator.Parameter {
+	output := make([]calculator.Parameter, len(params))
+
+	for i := range params {
+		output[i].Name = calculator.ParameterType(params[i].Name)
+		output[i].Value = params[i].Value
+	}
+
+	return output
 }
