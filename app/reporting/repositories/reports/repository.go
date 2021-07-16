@@ -14,4 +14,5 @@ type Parameter struct {
 type Repository interface {
 	GetDataByModule(ctx context.Context, moduleID string, searchOptions models.SearchOptions) (models.Report, error)
 	GetAllModulesSummary(ctx context.Context, options models.SearchOptions) ([]models.Report, error)
+	GetRiverSummary(ctx context.Context, riverID string) (models.Report, error)
 }

@@ -6,7 +6,7 @@ ADD . $APP_HOME
 WORKDIR $APP_HOME
 RUN mkdir build
 
-RUN go build -o build/main ./app/cmd/river-management/main.go
+RUN go build -o build/main ./app/cmd/reporting/main.go
 
 RUN chmod +x ./build/main
 

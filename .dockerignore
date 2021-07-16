@@ -1,0 +1,21 @@
+/data
+/mongo-data
+/rabbit-data
+/influx-data
+
+
+# IDE's stuff
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+.idea/
+
+# Local History for Visual Studio Code
+.history/
+/idea
+
+.github/

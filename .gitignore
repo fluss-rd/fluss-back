@@ -49,3 +49,9 @@
 /rabbit
 /log
 /environment
+
+docker-compose-staging.yml
+
+/infra
+
+.DS_Store

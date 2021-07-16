@@ -1,14 +1,16 @@
-FROM golang:1.16
-ENV APP_HOME go/src/github.com/flurssrd/fluss-back
+FROM golang:1.16-alpine as builder
+ENV APP_HOME /go/src/github.com/flussrd/fluss-back
 
 RUN mkdir -p $APP_HOME
 ADD . $APP_HOME
-RUN mkdir build
 WORKDIR $APP_HOME
+RUN mkdir build
 
-# RUN go mod download
 RUN go build -o build/main ./app/cmd/accounts/main.go
 
 RUN chmod +x ./build/main
+
+FROM alpine:3.11.3
+COPY --from=builder /go/src/github.com/flussrd/fluss-back .
 
 CMD ["./build/main"]

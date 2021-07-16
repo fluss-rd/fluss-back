@@ -110,39 +110,38 @@ Respuesta:
 
 
 #### /reports/rivers/{river_id}
-##### Estado general de un río: el promedio actual de todos sus módulos
+##### Estado general de un río: el promedio actual(última medición) de todos sus módulos
 ```
-{
-    "wqi": {
-        "min": 10,
-        "max": 10,
-        "average": 10,
-        "stdDeviation": 10,
-    },
-    "ph": {
-        "min": 10,
-        "max": 10,
-        "average": 10,
-        "stdDeviation": 10,
-    },
-    "tds": {
-        "min": 10,
-        "max": 10,
-        "average": 10,
-        "stdDeviation": 10,
-    },
-    "do": {
-        "min": 10,
-        "max": 10,
-        "average": 10,
-        "stdDeviation": 10,
-    },
-    "tmp": {
-        "min": 10,
-        "max": 10,
-        "average": 10,
-        "stdDeviation": 10,
-    },
+{    
+   "riverID": RVR123",
+    "wqi": 10,
+      "data":[
+      {
+         "date":"1996-10-15T00:05:32.000Z",
+         "parameters": [
+             {
+                "name": "ph",
+                "value": 10
+             },
+             {
+                "name": "tds",
+                "value": 10
+             },
+             {
+                "name": "tmp",
+                "value": 10
+             },
+             {
+                "name": "do",
+                "value": 10
+             },
+             {
+                "name": "wqi",
+                "value": 10
+             },
+         ]
+      }
+   ]
 }
 ```
 

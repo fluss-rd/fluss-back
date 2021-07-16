@@ -21,8 +21,8 @@ func newHttpRouter(endpoint Endpoint) Router {
 
 func (router httpRouter) Route() http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
+		setupPreflightResponse(&rw, r)
 		if r.Method == http.MethodOptions {
-			setupPreflightResponse(&rw, r)
 			return
 		}
 

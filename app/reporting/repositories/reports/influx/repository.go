@@ -254,3 +254,68 @@ func (repo influxRepository) GetAllModulesSummary(ctx context.Context, options m
 
 	return output, nil
 }
+
+func buildGetRiverSummaryQuery(riverID string) string {
+	query := `times = from(bucket: "modules-data")
+    |> range(start: -24h, stop: now())
+    |> filter(fn: (r) => r["_measurement"] == "water-sensor" and r["riverID"] == "RVRf12b9f172a294bfba5c52219c2b55523")
+    |> last()
+    |> group(columns: ["moduleID"], mode:"by")
+    |> group(columns: ["_field"], mode:"by")
+    |> max(column: "_time")
+	|> keep(columns: ["_time", "_field"])`
+
+	query += fmt.Sprintf(`averages = from(bucket: "modules-data")
+	|> range(start: 0, stop: now())
+	|> filter(fn: (r) => r["_measurement"] == "water-sensor" and r["riverID"] == "%s")
+	|> last()
+	|> group(columns: ["moduleID"], mode:"by")
+	|> group(columns: ["_field"], mode:"by")
+	|> mean()`, riverID)
+
+	query += `join(
+	tables: {times:times, averages:averages},
+	on: ["_field"]
+  )`
+
+	return query
+}
+
+func (repo influxRepository) GetRiverSummary(ctx context.Context, riverID string) (models.Report, error) {
+	queryAPI := repo.client.QueryAPI(organizationName)
+
+	query := buildGetRiverSummaryQuery(riverID)
+
+	result, err := queryAPI.Query(ctx, query)
+	if err != nil {
+		return models.Report{}, nil
+	}
+
+	report := models.Report{RiverID: riverID, Data: []models.Data{{}}}
+	lastDate := time.Time{}
+
+	for result.Next() {
+		if report.LastUpdated.Before(result.Record().Time()) {
+			report.LastUpdated = result.Record().Time()
+		}
+
+		if calculator.IsValidParamType(calculator.ParameterType(result.Record().Field())) {
+			report.Data[0].Parameters = append(report.Data[0].Parameters, models.Parameter{
+				Parameter: calculator.Parameter{
+					Name:  calculator.ParameterType(result.Record().Field()),
+					Value: result.Record().Value().(float64), // TODO: error handling
+				},
+				Date: result.Record().Time(),
+			})
+		}
+
+		if result.Record().Time().After(lastDate) {
+			lastDate = result.Record().Time()
+		}
+	}
+
+	time.Now().UnixNano()
+	report.Data[0].LastDate = lastDate
+
+	return report, nil
+}

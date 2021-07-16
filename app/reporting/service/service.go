@@ -45,6 +45,17 @@ func (s service) GetAllModulesSummary(ctx context.Context, options models.Search
 	return reports, nil
 }
 
+func (s service) GetRiverSummary(ctx context.Context, riverID string) (models.Report, error) {
+	report, err := s.repo.GetRiverSummary(ctx, riverID)
+	if err != nil {
+		return models.Report{}, err
+	}
+
+	reports := addWQIToReports([]models.Report{report})
+
+	return reports[0], nil
+}
+
 func toCalculatorParams(params []models.Parameter) []calculator.Parameter {
 	output := make([]calculator.Parameter, len(params))
 

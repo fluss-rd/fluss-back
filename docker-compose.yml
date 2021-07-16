@@ -1,10 +1,8 @@
 version: "3.4"
 services:
   api-gateway:
-    environment:
-      MONGO_URL: mongodb://db:27017/test
-      RABBIT_URL: amqp://fluss-service:F3VI8R@t3QQyLfn1n3rYEH8jMrIjT0@rabbit:5672
-      CONFIG_FILE: app/api-gateway/config/config.yml
+    env_file:
+      - environment/api-gateway.local.env
     build:
       context: .
       dockerfile: docker/Dockerfile.apigateway
@@ -14,15 +12,14 @@ services:
       - db
       - rabbit
   sender-simulator:
-    environment:
-      SEND_MESSAGES_URL: http://api-gateway:5000/messages
+    env_file:
+      - environment/sender-simulator.local.env
     build:
       context: .
       dockerfile: docker/Dockerfile.data-sender-simulator
   river-management:
-    environment:
-      MONGO_URL: mongodb://db:27017/test
-      CONFIG_FILE: app/api-gateway/config/config.yml
+    env_file:
+      - environment/river-management.local.env
     build:
       context: .
       dockerfile: docker/Dockerfile.river-management
@@ -32,9 +29,8 @@ services:
     depends_on:
       - db
   accounts:
-    environment:
-      CONFIG_FILE: app/accounts/config/config.yml
-      MONGO_URL: mongodb://db:27017/test
+    env_file:
+      - environment/accounts.local.env
     build:
       context: .
       dockerfile: docker/Dockerfile.accounts
@@ -50,6 +46,14 @@ services:
       - influxdb
       - rabbit
       - river-management
+  reporting:
+    env_file:
+      - environment/reporting.local.env
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.reporting
+    depends_on:
+      - influxdb
   db:
     image: mongo
     volumes:
@@ -64,7 +68,6 @@ services:
         - 15672:15672
     volumes:
         - ./rabbit-data:/var/lib/rabbitmq/
-        # - ./log/rabbit/:/var/log/rabbitmq
         - ./rabbit/definitions.json:/etc/rabbitmq/definitions.json
   influxdb:
     image: influxdb:2.0-alpine
@@ -73,7 +76,4 @@ services:
     volumes:
       # - ./influx-data:/root/.influxdbv2
       - ./influx-data:/var/lib/influxdb2
-    environment:
-      - INFLUXDB_ADMIN_USER=fluss-influx
-      - INFLUXDB_ADMIN_PASSWORD=fluss-influx
     

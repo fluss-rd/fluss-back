@@ -37,11 +37,19 @@ func (s service) SaveMeasurement(ctx context.Context, message models.Message) er
 		return err
 	}
 
+	// TODO: move this to a new function
+	if module.Currentstate == "inactive" {
+		_, err := client.UpdateModuleStatus(ctx, &grpchandler.UpdateModuleRequest{ModuleID: message.ModuleID, Status: "active"})
+		if err != nil {
+			log.Println("failed to update the module state")
+		}
+	}
+
 	// TODO: add broken or not field on message
 
 	// Ignore the message
-	if module.Currentstate == "inactive" {
-		log.Println("Ignoring message since the module is supposed to be inactive")
+	if module.Currentstate == "deactivated" {
+		log.Println("Ignoring message since the module is deactivated")
 		return nil
 	}
 

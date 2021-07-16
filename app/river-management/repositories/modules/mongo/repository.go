@@ -122,6 +122,31 @@ func (r mongoRepository) SaveModule(ctx context.Context, module models.Module) (
 	return module, nil
 }
 
+func (r mongoRepository) UpdateModule(ctx context.Context, options models.ModuleUpdateOptions) error {
+	collection := r.getModulesCollection()
+
+	updateMap := map[string]interface{}{}
+	if options.Status != "" {
+		updateMap["state"] = options.Status
+	}
+
+	updateResult, err := collection.UpdateOne(ctx, bson.M{
+		"_id": options.ModuleID,
+	}, bson.M{
+		"$set": updateMap,
+	})
+
+	if updateResult != nil && updateResult.MatchedCount == 0 {
+		return repository.ErrNotFound
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r mongoRepository) getModulesCollection() *mongo.Collection {
 	return r.client.Database(databaseName).Collection("modules")
 }

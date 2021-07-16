@@ -1,11 +1,18 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
 
 package proto;
 option go_package = "app/river-management/handlers/grpc/grpchandler";
 
 service Service {
-    rpc GetModuleByPhonenumber(GetModuleRequest) returns (Module);
+	rpc GetModuleByPhonenumber(GetModuleRequest) returns (Module);
+	rpc UpdateModuleStatus(UpdateModuleRequest) returns (google.protobuf.Empty) {};
+}
+
+message UpdateModuleRequest {
+	string moduleID = 1;
+	string status = 2;
 }
 
 message GetModuleRequest {
