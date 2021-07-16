@@ -36,6 +36,8 @@ var (
 	ErrInvalidBodyType = httputils.NewBadRequestError("invalid body of water type")
 	// ErrInvalidPhoneNumber invalid phone number
 	ErrInvalidPhoneNumber = httputils.NewBadRequestError("invalid phone number")
+	// ErrDuplicateFields duplicate fields
+	ErrDuplicateFields = httputils.NewBadRequestError("duplicate fields")
 	// ErrMissingType missing body of water type
 	ErrMissingType = httputils.NewBadRequestError("missing body of water type")
 	// ErrGeneratingIDFailed generating id failed
@@ -180,7 +182,16 @@ func (s service) CreateModule(ctx context.Context, module models.Module) (models
 
 	module.ModuleID = id
 
-	return s.modulesRepo.SaveModule(ctx, module)
+	createdModule, err := s.modulesRepo.SaveModule(ctx, module)
+	if errors.Is(modulesRepository.ErrDuplicateFields, err) {
+		return models.Module{}, ErrDuplicateFields
+	}
+
+	if err != nil {
+		return models.Module{}, err
+	}
+
+	return createdModule, nil
 }
 
 func isValidPhoneNumber(phoneNumber string) bool {

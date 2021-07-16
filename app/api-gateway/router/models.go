@@ -48,11 +48,21 @@ func newRouter(endpoint Endpoint, mode TransportMode, rabbitClient rabbit.Rabbit
 }
 
 func (g Gateway) handleEndpoint(ctx context.Context, endpoint Endpoint, requestHandler *mux.Router) {
-	requestHandler.Handle(endpoint.Path, g.authMiddleware(ctx, g.Router.Route())).Methods(endpoint.Method)
+	methods := []string{endpoint.Method}
+	if endpoint.Method != http.MethodOptions {
+		methods = append(methods, http.MethodOptions)
+	}
+
+	requestHandler.Handle(endpoint.Path, g.authMiddleware(ctx, g.Router.Route())).Methods(methods...)
 }
 
 func (g Gateway) authMiddleware(ctx context.Context, handler http.HandlerFunc) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
+		setupPreflightResponse(&rw, r)
+		if r.Method == http.MethodOptions {
+			return
+		}
+
 		if !g.Endpoint.Authorized {
 			handler.ServeHTTP(rw, r)
 			return
