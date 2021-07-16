@@ -2,6 +2,7 @@ package calculator
 
 import (
 	"errors"
+	"math"
 
 	"github.com/flussrd/fluss-back/app/telemetry/models"
 )
@@ -18,18 +19,25 @@ var (
 )
 
 var (
-	// From "Analytical Studies on Water Quality Index of River Landzu", table 2
-	permissibleValues = map[models.MeasurementType]float64{
+	idealValues = map[models.MeasurementType]float64{
 		models.MeasurementTypePH:  7,
-		models.MeasurementTypeTDS: 500,
-		models.MeasurementTypeTDY: 10, // arbitrary, from Ivan's scale
-		models.MeasurementTypeDO:  5,
+		models.MeasurementTypeTDS: 0,
+		models.MeasurementTypeTDY: 0,
+		models.MeasurementTypeDO:  20, // 20 is the max the sensor can read
+	}
+
+	// From "Analytical Studies on Water Quality Index of River Landzu", table 2
+	standardValues = map[models.MeasurementType]float64{
+		models.MeasurementTypePH:  7.5,
+		models.MeasurementTypeTDS: 500, // measured in mg/litre
+		models.MeasurementTypeTDY: 10, // measured in NTUs
+		models.MeasurementTypeDO:  5, // measured in mg/litre
 	}
 
 	waiUsedValues = map[models.MeasurementType]bool{
 		models.MeasurementTypePH:  true,
 		models.MeasurementTypeTDS: true,
-		models.MeasurementTypeTDY: true, // arbitrary, from Ivan's scale
+		models.MeasurementTypeTDY: true,
 		models.MeasurementTypeDO:  true,
 	}
 )
@@ -53,8 +61,20 @@ func NewCalculator(indexType IndexType) (Calculator, error) {
 }
 
 func (calculator waiCalculator) GetWQI(parameters []models.Measurement) float64 {
-	wqSum := 0.0
 	wSum := 0.0
+	OverallWQI := 0.0
+	k := 0.0
+
+	for measurementType, value := range standardValues {
+		if !calculator.shouldUseParam(measurementType) {
+			continue
+		}
+
+		w := (1.0 / value)
+		wSum += w
+	}
+
+	k = 1.0 / wSum
 
 	// quality rating scale. generation of the parameter sub-indices: parameter concentrations are converted to unit less sub-indices
 	for _, param := range parameters {
@@ -62,17 +82,13 @@ func (calculator waiCalculator) GetWQI(parameters []models.Measurement) float64 
 			continue
 		}
 
-		permissibleValue := permissibleValues[param.Name]
-		w := (1 / permissibleValue)
+		qi := ( math.Abs(param.Value - idealValues[param.Name]) ) / ( math.Abs(standardValues[param.Name] - idealValues[param.Name]) ) * 100.0
+		wi := k / standardValues[param.Name]
 
-		q := (param.Value / permissibleValue) * 100
-
-		// agregation
-		wSum += w
-		wqSum += w * q
+		OverallWQI += (wi * qi)
 	}
 
-	return wqSum / wSum // overall
+	return OverallWQI
 }
 
 func (calculator waiCalculator) shouldUseParam(paramName models.MeasurementType) bool {
