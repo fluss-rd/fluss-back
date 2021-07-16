@@ -13,6 +13,78 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
+type Range struct {
+	Min float32
+	Max float32
+}
+
+var (
+	rangeGoodMeasurementTypePH = Range{
+		Min: 7.4,
+		Max: 7.5,
+	}
+	rangeNormalMeasurementTypePH = Range{
+		Min: 6.5,
+		Max: 8.5,
+	}
+	rangeBadMeasurementTypePH = Range{
+		Min: 9,
+		Max: 14,
+	}
+
+	rangeGoodMeasurementTypeDO = Range{
+		Min: 9,
+		Max: 20, // 20 is the max the sensor can read
+	}
+	rangeNormalMeasurementTypeDO = Range{
+		Min: 5,
+		Max: 8,
+	}
+	rangeBadMeasurementTypeDO = Range{
+		Min: 0,
+		Max: 4,
+	}
+
+	rangeColdMeasurementTypeTMP = Range{
+		Min: 18,
+		Max: 20,
+	}
+	rangeNormalMeasurementTypeTMP = Range{
+		Min: 23,
+		Max: 25,
+	}
+	rangeWarnMeasurementTypeTMP = Range{
+		Min: 26,
+		Max: 30,
+	}
+
+	rangeGoodMeasurementTypeTDY = Range{
+		Min: 0,
+		Max: 5,
+	}
+	rangeNormalMeasurementTypeTDY = Range{
+		Min: 10,
+		Max: 20,
+	}
+	rangeBadMeasurementTypeTDY = Range{
+		Min: 20,
+		Max: 1000,
+	}
+
+	rangeGoodMeasurementTypeTDS = Range{
+		Min: 0,
+		Max: 300,
+	}
+	rangeNormalMeasurementTypeTDS = Range{
+		Min: 300,
+		Max: 900,
+	}
+	rangeBadMeasurementTypeTDS = Range{
+		Min: 900,
+		Max: 1000,
+	}
+)
+
 type Module struct {
 	phoneNumber string
 	quality     string
@@ -31,15 +103,23 @@ type Measurement struct {
 var modules = []Module{
 	{
 		quality:     "normal",
-		phoneNumber: "+18091231122",
+		phoneNumber: "+18091234321",
 	},
 	{
 		quality:     "bad",
-		phoneNumber: "+18091231123",
+		phoneNumber: "+18291234321",
 	},
 	{
 		quality:     "good",
-		phoneNumber: "+18091231124",
+		phoneNumber: "+18491234321",
+	},
+	{
+		quality:     "bad",
+		phoneNumber: "+18290987890",
+	},
+	{
+		quality:     "good",
+		phoneNumber: "+18090987890",
 	},
 }
 
@@ -60,14 +140,18 @@ func main() {
 	<-forever
 }
 
+func randFloat(randRange Range) float32 {
+	return randRange.Min + rand.Float32() * (randRange.Max - randRange.Min)
+}
+
 func getPh(quality string) float32 {
 	switch quality {
-	case "good":
-		return rand.Float32() * (8.7 - 7.4)
-	case "normal":
-		return rand.Float32() * (9 - 6)
-	case "bad":
-		return rand.Float32() * (4 - 0)
+		case "good":
+			return randFloat(rangeGoodMeasurementTypePH)
+		case "normal":
+			return randFloat(rangeNormalMeasurementTypePH)
+		case "bad":
+			return randFloat(rangeBadMeasurementTypePH)
 	}
 
 	return 0
@@ -75,12 +159,12 @@ func getPh(quality string) float32 {
 
 func getDissolvedOxygen(quality string) float32 {
 	switch quality {
-	case "good":
-		return rand.Float32() * (20 - 9) // 20 is the max the sensor can read
-	case "normal":
-		return rand.Float32() * (8 - 5)
-	case "bad":
-		return rand.Float32() * (5 - 0)
+		case "good":
+			return randFloat(rangeGoodMeasurementTypeDO)
+		case "normal":
+			return randFloat(rangeNormalMeasurementTypeDO)
+		case "bad":
+			return randFloat(rangeBadMeasurementTypeDO)
 	}
 
 	return 0
@@ -88,12 +172,12 @@ func getDissolvedOxygen(quality string) float32 {
 
 func getTDS(quality string) float32 {
 	switch quality {
-	case "good":
-		return rand.Float32() * (600 - 0)
-	case "normal":
-		return rand.Float32() * (900 - 600)
-	case "bad":
-		return rand.Float32() * (1000 - 900)
+		case "good":
+			return randFloat(rangeGoodMeasurementTypeTDS)
+		case "normal":
+			return randFloat(rangeNormalMeasurementTypeTDS)
+		case "bad":
+			return randFloat(rangeBadMeasurementTypeTDS)
 	}
 
 	return 0
@@ -102,15 +186,15 @@ func getTDS(quality string) float32 {
 func getTemperature() float32 {
 	hour := time.Now().Hour()
 	if hour > 20 && hour < 6 { // evening, "cold water"
-		return rand.Float32() * (20 - 18)
+		return randFloat(rangeColdMeasurementTypeTMP)
 	}
 
 	if hour >= 6 && hour < 12 { // day / morning , "average water"
-		return rand.Float32() * (25 - 23)
+		return randFloat(rangeNormalMeasurementTypeTMP)
 	}
 
 	if hour >= 12 && hour < 18 { // day / afternoon , "hot water"
-		return rand.Float32() * (30 - 26)
+		return randFloat(rangeWarnMeasurementTypeTMP)
 	}
 
 	return 28
@@ -118,12 +202,12 @@ func getTemperature() float32 {
 
 func getTurbidity(quality string) float32 {
 	switch quality {
-	case "good":
-		return rand.Float32() * (33.33 - 0)
-	case "normal":
-		return rand.Float32() * (67 - 34)
-	case "bad":
-		return rand.Float32() * (100 - 67)
+		case "good":
+			return randFloat(rangeGoodMeasurementTypeTDY)
+		case "normal":
+			return randFloat(rangeNormalMeasurementTypeTDY)
+		case "bad":
+			return randFloat(rangeBadMeasurementTypeTDY)
 	}
 
 	return 0
