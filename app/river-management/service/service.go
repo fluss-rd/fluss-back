@@ -268,17 +268,13 @@ func (s service) GetModulesN(ctx context.Context) ([]models.Module, error) {
 	return modules, nil
 }
 
-func (s service) UpdateModuleState(ctx context.Context, moduleID string, state models.ModuleState) (models.Module, error) {
-	if !models.IsValidModulestate(state) {
+func (s service) UpdateModule(ctx context.Context, moduleID string, options models.ModuleUpdateOptions) (models.Module, error) {
+	// TODO: move this to a validate function in the controller
+	if options.State != "" && !models.IsValidModulestate(options.State) {
 		return models.Module{}, ErrInvalidModuleState
 	}
 
-	options := models.ModuleUpdateOptions{
-		ModuleID: moduleID,
-		State:    state,
-	}
-
-	err := s.modulesRepo.UpdateModule(ctx, options)
+	err := s.modulesRepo.UpdateModule(ctx, moduleID, options)
 
 	return models.Module{}, err
 }

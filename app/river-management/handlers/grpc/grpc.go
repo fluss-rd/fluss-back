@@ -45,7 +45,7 @@ func (handler grpcHandler) GetModuleByPhonenumber(ctx context.Context, request *
 }
 
 func (handler grpcHandler) UpdateModuleStatus(ctx context.Context, request *grpcService.UpdateModuleRequest) (*emptypb.Empty, error) {
-	_, err := handler.s.UpdateModuleState(ctx, request.ModuleID, models.ModuleState(request.Status))
+	_, err := handler.s.UpdateModule(ctx, request.ModuleID, models.ModuleUpdateOptions{State: models.ModuleState(request.Status)})
 	if err != nil {
 		log.Println("failed to update module status", err.Error())
 	}

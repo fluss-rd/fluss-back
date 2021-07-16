@@ -30,6 +30,7 @@ type HTTPHandler interface {
 
 	HandleCreateModule(ctx context.Context) http.HandlerFunc
 	HandleGetModule(ctx context.Context) http.HandlerFunc
+	HandleUpdateModule(ctx context.Context) http.HandlerFunc
 	HandleGetModules(ctx context.Context) http.HandlerFunc
 }
 
@@ -147,14 +148,15 @@ func (h httpHandler) HandleUpdateModule(ctx context.Context) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		params := mux.Vars(r)
 		id := params["id"]
-		state := params["state"]
 
-		options := models.ModuleUpdateOptions{
-			ModuleID: id,
-			State:    models.ModuleState(state),
+		options := models.ModuleUpdateOptions{}
+		err := json.NewDecoder(r.Body).Decode(&options)
+		if err != nil {
+			httputils.RespondWithError(rw, ErrInvalidBody)
+			return
 		}
 
-		_, err := h.s.UpdateModuleState(ctx, id, options.State)
+		_, err = h.s.UpdateModule(ctx, id, options)
 		if err != nil {
 			httputils.RespondWithError(rw, err)
 			return

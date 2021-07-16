@@ -62,6 +62,7 @@ func main() {
 
 	router.Handle("/modules", handler.HandleGetModules(ctx)).Methods(http.MethodGet)
 	router.Handle("/modules/{id}", handler.HandleGetModule(ctx)).Methods(http.MethodGet)
+	router.Handle("/modules/{id}", handler.HandleUpdateModule(ctx)).Methods(http.MethodPatch)
 	router.Handle("/modules", handler.HandleCreateModule(ctx)).Methods(http.MethodPost)
 
 	fmt.Println("Listening on port " + config.Port)

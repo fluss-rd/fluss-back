@@ -122,7 +122,7 @@ func (r mongoRepository) SaveModule(ctx context.Context, module models.Module) (
 	return module, nil
 }
 
-func (r mongoRepository) UpdateModule(ctx context.Context, options models.ModuleUpdateOptions) error {
+func (r mongoRepository) UpdateModule(ctx context.Context, moduleID string, options models.ModuleUpdateOptions) error {
 	collection := r.getModulesCollection()
 
 	updateMap := map[string]interface{}{}
@@ -130,8 +130,15 @@ func (r mongoRepository) UpdateModule(ctx context.Context, options models.Module
 		updateMap["state"] = options.State
 	}
 
+	if options.Location.Lat != 0 && options.Location.Lng != 0 {
+		updateMap["location"] = map[string]interface{}{
+			"latitude":  options.Location.Lat,
+			"longitude": options.Location.Lng,
+		}
+	}
+
 	updateResult, err := collection.UpdateOne(ctx, bson.M{
-		"_id": options.ModuleID,
+		"_id": moduleID,
 	}, bson.M{
 		"$set": updateMap,
 	})

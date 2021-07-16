@@ -8,6 +8,7 @@ option go_package = "app/river-management/handlers/grpc/grpchandler";
 service Service {
 	rpc GetModuleByPhonenumber(GetModuleRequest) returns (Module);
 	rpc UpdateModuleStatus(UpdateModuleRequest) returns (google.protobuf.Empty) {};
+	// TODO: add a general UpdateModule method
 }
 
 message UpdateModuleRequest {

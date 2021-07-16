@@ -47,8 +47,8 @@ type Module struct {
 }
 
 type ModuleUpdateOptions struct {
-	State    ModuleState
-	ModuleID string
+	State    ModuleState `json:"state"`
+	Location Point       `json:"location"`
 }
 
 func IsValidModulestate(state ModuleState) bool {
