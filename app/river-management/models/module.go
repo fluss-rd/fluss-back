@@ -23,6 +23,14 @@ const (
 	ModuleStateBroken = "broken"
 )
 
+var validModuleStates = map[ModuleState]bool{
+	ModuleStateActive:      true,
+	ModuleStateInactive:    true,
+	ModuleStateDeactivated: true,
+	ModuleStateDeleted:     true,
+	ModuleStateBroken:      true,
+}
+
 // Module represents a device on the river, the entity that is going to take the measurements
 type Module struct {
 	ModuleID     string      `json:"moduleID" bson:"_id"`
@@ -39,6 +47,10 @@ type Module struct {
 }
 
 type ModuleUpdateOptions struct {
-	Status   ModuleState
+	State    ModuleState
 	ModuleID string
+}
+
+func IsValidModulestate(state ModuleState) bool {
+	return validModuleStates[state]
 }

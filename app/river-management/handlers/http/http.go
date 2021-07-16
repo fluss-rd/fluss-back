@@ -143,6 +143,27 @@ func (h httpHandler) HandleCreateModule(ctx context.Context) http.HandlerFunc {
 	}
 }
 
+func (h httpHandler) HandleUpdateModule(ctx context.Context) http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		params := mux.Vars(r)
+		id := params["id"]
+		state := params["state"]
+
+		options := models.ModuleUpdateOptions{
+			ModuleID: id,
+			State:    models.ModuleState(state),
+		}
+
+		_, err := h.s.UpdateModuleState(ctx, id, options.State)
+		if err != nil {
+			httputils.RespondWithError(rw, err)
+			return
+		}
+
+		httputils.RespondJSON(rw, http.StatusCreated, map[string]string{"message": "updated"})
+	}
+}
+
 // HandleGetModule handle get module handles the get module http request
 func (h httpHandler) HandleGetModule(ctx context.Context) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {

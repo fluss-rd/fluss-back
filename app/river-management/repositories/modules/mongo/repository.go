@@ -126,8 +126,8 @@ func (r mongoRepository) UpdateModule(ctx context.Context, options models.Module
 	collection := r.getModulesCollection()
 
 	updateMap := map[string]interface{}{}
-	if options.Status != "" {
-		updateMap["state"] = options.Status
+	if options.State != "" {
+		updateMap["state"] = options.State
 	}
 
 	updateResult, err := collection.UpdateOne(ctx, bson.M{

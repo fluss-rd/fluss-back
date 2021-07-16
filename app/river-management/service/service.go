@@ -34,6 +34,8 @@ var (
 	ErrInvalidRiver = httputils.NewBadRequestError("invalid river")
 	// ErrInvalidBodyType invalid body of water type
 	ErrInvalidBodyType = httputils.NewBadRequestError("invalid body of water type")
+	// ErrInvalidModuleState invalid module state
+	ErrInvalidModuleState = httputils.NewBadRequestError("invalid module state")
 	// ErrInvalidPhoneNumber invalid phone number
 	ErrInvalidPhoneNumber = httputils.NewBadRequestError("invalid phone number")
 	// ErrDuplicateFields duplicate fields
@@ -266,10 +268,14 @@ func (s service) GetModulesN(ctx context.Context) ([]models.Module, error) {
 	return modules, nil
 }
 
-func (s service) UpdateModuleSatus(ctx context.Context, moduleID string, status models.ModuleState) (models.Module, error) {
+func (s service) UpdateModuleState(ctx context.Context, moduleID string, state models.ModuleState) (models.Module, error) {
+	if !models.IsValidModulestate(state) {
+		return models.Module{}, ErrInvalidModuleState
+	}
+
 	options := models.ModuleUpdateOptions{
 		ModuleID: moduleID,
-		Status:   status,
+		State:    state,
 	}
 
 	err := s.modulesRepo.UpdateModule(ctx, options)
