@@ -20,3 +20,9 @@ Make sure docker is running or restart it in case it didn't start properly with 
 To rebuild an image you must use `docker-compose build` or `docker-compose up --build`.
 
 You could assume that is the main file of all app/cmd/api-gateway/main.go
+
+# Common Errors
+
+## problems with docker-component up rabbit
+
+- make sure this file exists: /etc/rabbitmq/definitions.json
