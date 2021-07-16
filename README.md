@@ -1,6 +1,11 @@
 # fluss-back
 Fluss backend services
 
+## How was the WQI calculated?
+To know more about the formula and the underlying theory, see the following article:
+[A comparison between weighted arithmetic and Canadian
+methods for a drinking water quality index at selected
+locations in shatt al-kufa](https://iopscience.iop.org/article/10.1088/1757-899X/433/1/012026/pdf)
 
 ## How to run the project?
 
