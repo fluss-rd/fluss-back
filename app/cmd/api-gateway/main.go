@@ -254,7 +254,7 @@ func init() {
 }
 
 func main() {
-	config, err := config.GetConfig(os.Getenv("CONFIG_FILE"))
+	config, err := config.GetConfigFromEnv()
 	if err != nil {
 		log.Fatal("could not load config: " + err.Error())
 	}

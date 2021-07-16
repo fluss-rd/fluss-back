@@ -49,3 +49,5 @@
 /rabbit
 /log
 /environment
+
+docker-compose-staging.yml
