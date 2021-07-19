@@ -13,6 +13,7 @@ type UserUseCase interface {
 	AddRoleToUser(ctx context.Context, roleName string, userID string) error
 	UpdateUser(ctx context.Context, request httputils.PatchRequest, userID string) (models.User, error)
 	GetUser(ctx context.Context, userID string) (models.User, error)
+	GetUsers(ctx context.Context) ([]models.User, error)
 }
 
 // RolesUseCase defines the usescases functions for the user

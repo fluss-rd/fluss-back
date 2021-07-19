@@ -334,6 +334,25 @@ func (s service) GetUser(ctx context.Context, userID string) (models.User, error
 	return user, nil
 }
 
+func (s service) GetUsers(ctx context.Context) ([]models.User, error) {
+	users, err := s.usersRepo.GetUsersN(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	users = removePassword(users)
+
+	return users, nil
+}
+
+func removePassword(users []models.User) []models.User {
+	for index := range users {
+		users[index].Password = ""
+	}
+
+	return users
+}
+
 // Login authenticates a user
 func (s service) Login(ctx context.Context, email string, password string) (LoginResponse, error) {
 	err := validateLoginInput(email, password)

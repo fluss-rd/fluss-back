@@ -49,6 +49,11 @@ func (_m *Repository) GetUser(ctx context.Context, userID string) (models.User, 
 	return r0, r1
 }
 
+// TODO: regenerate this file
+func (_m *Repository) GetUsersN(ctx context.Context) ([]models.User, error) {
+	return nil, nil
+}
+
 // GetUserByEmail provides a mock function with given fields: ctx, email
 func (_m *Repository) GetUserByEmail(ctx context.Context, email string) (models.User, error) {
 	ret := _m.Called(ctx, email)

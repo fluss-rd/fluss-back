@@ -59,10 +59,11 @@ func main() {
 
 	router := mux.NewRouter()
 
-	router.Handle("/role", handler.HandleCreateRole(ctx)).Methods(http.MethodPost)
-	router.Handle("/role", handler.HandleGetRoles(ctx)).Methods(http.MethodGet)
+	router.Handle("/roles", handler.HandleCreateRole(ctx)).Methods(http.MethodPost)
+	router.Handle("/roles", handler.HandleGetRoles(ctx)).Methods(http.MethodGet)
 
 	router.Handle("/users", handler.HandleCreateUser(ctx)).Methods(http.MethodPost)
+	router.Handle("/users", handler.HandleGetUsers(ctx)).Methods(http.MethodGet)
 	router.Handle("/users/{id}", handler.HandleGetUser(ctx)).Methods(http.MethodGet)
 	router.Handle("/users/{id}", handler.HandleUpdateUser(ctx)).Methods(http.MethodPatch)
 

@@ -25,6 +25,7 @@ var (
 // HTTPHandler defines the functiosn that will handle http requests
 type HTTPHandler interface {
 	HandleCreateUser(ctx context.Context) http.HandlerFunc
+	HandleGetUsers(ctx context.Context) http.HandlerFunc
 	HandleUpdateUser(ctx context.Context) http.HandlerFunc
 	HandleCreateRole(ctx context.Context) http.HandlerFunc
 	HandleGetRoles(ctx context.Context) http.HandlerFunc
@@ -187,6 +188,18 @@ func (h httpHandler) HandleGetUser(ctx context.Context) http.HandlerFunc {
 		}
 
 		httputils.RespondJSON(rw, http.StatusOK, user)
+	}
+}
+
+func (h httpHandler) HandleGetUsers(ctx context.Context) http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		users, err := h.service.GetUsers(ctx)
+		if err != nil {
+			httputils.RespondWithError(rw, err)
+			return
+		}
+
+		httputils.RespondJSON(rw, http.StatusOK, users)
 	}
 }
 

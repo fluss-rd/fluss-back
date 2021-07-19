@@ -29,6 +29,24 @@ func New(client *mongo.Client) MongoRepository {
 	}
 }
 
+func (repo MongoRepository) GetUsersN(ctx context.Context) ([]models.User, error) {
+	usersCollection := repo.getUsersCollection()
+
+	result, err := usersCollection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+
+	users := []models.User{}
+
+	err = result.All(ctx, &users)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
 // GetUser returns a user from the database from a userID
 func (repo MongoRepository) GetUser(ctx context.Context, userID string) (models.User, error) {
 	return repo.getUser(ctx, bson.M{"_id": userID})
