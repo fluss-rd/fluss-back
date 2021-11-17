@@ -26,12 +26,14 @@ func init() {
 
 func main() {
 
-	config, err := config.GetConfig(os.Getenv("CONFIG_FILE"))
+	config, err := config.GetConfigFromEnv()
 	if err != nil {
 		log.Fatal("failed to load config: " + err.Error())
 	}
 
 	ctx := context.Background()
+
+	fmt.Println(config.DatabaseConfig.Connection)
 
 	client, err := mongo.NewClient(options.Client().ApplyURI(config.DatabaseConfig.Connection))
 	if err != nil {

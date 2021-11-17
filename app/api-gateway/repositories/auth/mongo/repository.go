@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	databaseName = "flussDB"
+	databaseName = "fluss-db"
 )
 
 type mongoRepository struct {

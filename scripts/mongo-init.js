@@ -1,5 +1,5 @@
 // Create database
-db = new Mongo().getDB("flussDB");
+db = new Mongo().getDB("fluss-db");
 
 // Collections
 db.createCollection("roles");
@@ -27,7 +27,7 @@ db.roles.insert({
 // TODO: This is not secure, figure out a way to do it
 db.users.insert({
     _id: "unique-id",
-    email: "fluss.rd.admin@gmai.com",
+    email: "fluss-admin@admin.com",
     password: "$2b$10$W8aSBwYLOANnCYUNEhM.runbR4fs7jBT5OPOWJkt7ShddmBfMUxvS",
     roleName: "superAdmin"
 });

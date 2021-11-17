@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	databaseName = "flussDB"
+	databaseName = "fluss-db"
 
 	mongoDuplicateCode = 11000
 )

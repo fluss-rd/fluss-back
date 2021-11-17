@@ -3,6 +3,7 @@ package router
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/flussrd/fluss-back/app/accounts/shared/httputils"
@@ -70,18 +71,21 @@ func (g Gateway) authMiddleware(ctx context.Context, handler http.HandlerFunc) h
 
 		resource, err := getResourceFromEndpoint(g.Endpoint)
 		if err != nil {
+			fmt.Println("getting_resource_from_endpoint_failed: %w", err)
 			httputils.RespondWithError(rw, err)
 			return
 		}
 
 		action, err := getActionFromMethod(r.Method)
 		if err != nil {
+			fmt.Println("getting_action_from_method_failed: %w", err)
 			httputils.RespondWithError(rw, err)
 			return
 		}
 
 		sub, err := g.Authorizer.Authorize(ctx, r, resource, action)
 		if err != nil {
+			fmt.Println("authorization_failed: %w", err)
 			httputils.RespondWithError(rw, err)
 			return
 		}

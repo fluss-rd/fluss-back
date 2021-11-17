@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/flussrd/fluss-back/app/accounts/models"
@@ -12,7 +13,7 @@ import (
 )
 
 const (
-	databaseName = "flussDB"
+	databaseName = "fluss-db"
 
 	mongoDuplicateCode = 11000
 )
@@ -59,6 +60,8 @@ func (repo MongoRepository) GetUserByEmail(ctx context.Context, email string) (m
 
 func (repo MongoRepository) getUser(ctx context.Context, filter bson.M) (models.User, error) {
 	usersCollection := repo.getUsersCollection()
+
+	fmt.Println(filter)
 
 	user := models.User{}
 

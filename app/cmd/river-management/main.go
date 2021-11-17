@@ -6,7 +6,6 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"os"
 
 	"github.com/flussrd/fluss-back/app/accounts/config"
 	grpcHandlers "github.com/flussrd/fluss-back/app/river-management/handlers/grpc"
@@ -28,7 +27,7 @@ func init() {
 }
 
 func main() {
-	config, err := config.GetConfig(os.Getenv("CONFIG_FILE"))
+	config, err := config.GetConfigFromEnv()
 	if err != nil {
 		log.Fatal("failed to load config: " + err.Error())
 	}

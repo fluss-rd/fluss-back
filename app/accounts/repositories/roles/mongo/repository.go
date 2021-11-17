@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	databaseName = "flussDB"
+	databaseName = "fluss-db"
 
 	mongoDuplicateCode = 11000
 )
@@ -86,16 +86,15 @@ func (m mongoRepository) GetRoles(ctx context.Context) ([]models.Role, error) {
 		return nil, ErrNotFound
 	}
 
-	// TODO: wrap this error
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("finding roles failed: %w", err)
 	}
 
 	roles := []models.Role{}
 
 	err = results.All(ctx, &roles)
-	if err != nil { //TODO: wrap
-		return nil, err
+	if err != nil {
+		return nil, fmt.Errorf("reading results failed: %w", err)
 	}
 
 	return roles, nil

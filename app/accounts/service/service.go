@@ -133,6 +133,7 @@ func (s service) isValidRole(ctx context.Context, roleName string) (bool, error)
 		return false, nil
 	}
 
+	// TODO: wrap this error!
 	if err != nil {
 		return false, ErrValidatingRoleFailed
 	}
@@ -386,7 +387,7 @@ func generateToken(user models.User) (string, error) {
 		"exp":      time.Now().Add(time.Hour * 24), // TODO: make the adding a const
 	})
 
-	signedToken, err := token.SignedString([]byte(os.Getenv("TOKEN_SECRET")))
+	signedToken, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
 		return "", fmt.Errorf("error signing token: " + err.Error())
 	}

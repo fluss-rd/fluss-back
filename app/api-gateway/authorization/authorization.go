@@ -47,7 +47,7 @@ func (a authorizer) Validate(ctx context.Context, token string, resource string,
 			return nil, ErrInvalidTokenSigningMethod
 		}
 
-		return []byte(os.Getenv("TOKEN_SECRET")), nil
+		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
 
 	if err != nil {
