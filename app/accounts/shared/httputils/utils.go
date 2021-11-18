@@ -61,6 +61,12 @@ func RespondJSON(w http.ResponseWriter, statusCode int, data interface{}) {
 	_ = json.NewEncoder(w).Encode(data)
 }
 
+func RespondText(w http.ResponseWriter, statusCode int, text string) {
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(statusCode)
+	_ = json.NewEncoder(w).Encode(text)
+}
+
 // RespondWithError responds with a json with the given status code and message
 func RespondWithError(w http.ResponseWriter, err error) {
 	errorResponse, ok := err.(ErrorResponse)

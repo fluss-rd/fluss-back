@@ -45,7 +45,7 @@ func (handler HTTPHandler) handleReceiveMessage(ctx context.Context) http.Handle
 
 		handler.service.HandleHTTPMessage(ctx, source, string(requestBody))
 
-		// handler.service.HandleHTTPMessage(ctx, source, )
-		httputils.RespondJSON(rw, http.StatusOK, []byte(""))
+		// TODO: manage the responses according the source. Twillio required the response to be text/plan ( or other but not JSON)
+		httputils.RespondText(rw, http.StatusOK, "")
 	}
 }
