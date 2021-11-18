@@ -32,7 +32,7 @@ func (handler rabbitMQHandler) HandleMessages(ctx context.Context) error {
 		return err
 	}
 
-	log.Println("Listening for messages...")
+	log.Println("Listening for messages on queue...")
 	for message := range ch {
 
 		// TODO: the logic should be in another function
@@ -49,6 +49,7 @@ func (handler rabbitMQHandler) HandleMessages(ctx context.Context) error {
 			continue
 		}
 
+		// TODO: add logic to handle different message types and move it to the service
 		err = handler.service.SaveMeasurement(ctx, moduleMessage)
 		if err != nil {
 			log.Println("saving measurement failed: ", err.Error())

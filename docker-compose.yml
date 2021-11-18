@@ -37,6 +37,8 @@ services:
     depends_on:
       - db
   telemetry:
+    ports:
+      - "5002:5000"
     env_file:
       - environment/telemetry.local.env
     build:
@@ -66,9 +68,13 @@ services:
     ports:
         - 5672:5672
         - 15672:15672
+    environment:
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbitmq_management load_definitions "/tmp/rabbit.definitions.json"
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
     volumes:
         - ./rabbit-data:/var/lib/rabbitmq/
-        - ./rabbit/definitions.json:/etc/rabbitmq/definitions.json
+        - ./rabbit/definitions.json:/tmp/rabbit.definitions.json
   influxdb:
     image: influxdb:2.0-alpine
     ports:

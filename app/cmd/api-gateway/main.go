@@ -195,6 +195,17 @@ var endpoints = []router.Endpoints{
 				UseSharedOptions: true,
 				TransportMode:    router.TransportModeHTTP,
 			},
+			// ----------------------------------------------------------
+			// telemetry service
+			{
+				Path:             `/messages/{source}`,
+				RemotePath:       `/messages/{source}`,
+				RemotHost:        "http://telemetry-service:5000",
+				Method:           http.MethodPost,
+				Authorized:       false,
+				UseSharedOptions: true,
+				TransportMode:    router.TransportModeHTTP,
+			},
 			{
 				Path:          `/messages`,
 				Method:        http.MethodPost,

@@ -524,7 +524,7 @@ const locationYaqueDelNorteRiver = [
 
 // TODO: remove this segment when the data simulator is not longer being used
 db.rivers.insertOne({
-    riverID: "1",
+    _id: "RVR1",
     name: "Laguna de Oviedo",
     location: locationOviedoLagoon,
     userID: "1",
@@ -532,7 +532,7 @@ db.rivers.insertOne({
 })
 
 db.rivers.insertOne({
-    riverID: "2",
+    _id: "RVR2",
     name: "Río Yaque del Norte",
     location: locationYaqueDelNorteRiver,
     userID: "1",
@@ -540,10 +540,10 @@ db.rivers.insertOne({
 })
 
 db.modules.insertOne({
-    moduleID: "1-1",
+    _id: "MDL1",
     phoneNumber: "+18091234321",
     alias: "modulo-oviedo-1-809",
-    riverID: "1",
+    riverID: "RVR1",
     riverName: "Laguna de Oviedo",
     userID: "1",
     state: "active",
@@ -555,10 +555,10 @@ db.modules.insertOne({
 })
 
 db.modules.insertOne({
-    moduleID: "1-2",
+    _id: "MDL2",
     phoneNumber: "+18291234321",
     alias: "modulo-oviedo-2-829",
-    riverID: "1",
+    riverID: "RVR1",
     riverName: "Laguna de Oviedo",
     userID: "1",
     state: "active",
@@ -570,10 +570,10 @@ db.modules.insertOne({
 })
 
 db.modules.insertOne({
-    moduleID: "1-3",
+    _id: "MDL3",
     phoneNumber: "+18491234321",
     alias: "modulo-oviedo-3-849",
-    riverID: "1",
+    riverID: "RVR1",
     riverName: "Laguna de Oviedo",
     userID: "1",
     state: "active",
@@ -585,10 +585,10 @@ db.modules.insertOne({
 })
 
 db.modules.insertOne({
-    moduleID: "2-1",
+    _id: "MDL4",
     phoneNumber: "+18090987890",
     alias: "modulo-yaque-del-norte-1-809",
-    riverID: "2",
+    riverID: "RVR2",
     riverName: "Río Yaque del Norte",
     userID: "1",
     state: "active",
@@ -600,10 +600,10 @@ db.modules.insertOne({
 })
 
 db.modules.insertOne({
-    moduleID: "2-2",
+    _id: "MDL5",
     phoneNumber: "+18290987890",
     alias: "modulo-yaque-del-norte-2-829",
-    riverID: "2",
+    riverID: "RVR2",
     riverName: "Río Yaque del Norte",
     userID: "1",
     state: "active",
