@@ -15,7 +15,7 @@ import (
 
 const (
 	organizationName = "fluss"
-	bucketName       = "fluss-bucket"
+	bucketName       = "fluss"
 )
 
 type influxRepository struct {

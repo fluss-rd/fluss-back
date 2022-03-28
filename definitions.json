@@ -52,7 +52,7 @@
   ],
   "bindings": [
     {
-      "source": "amq.direct",
+      "source": "modules-messages",
       "vhost": "/",
       "destination": "modules-messages",
       "destination_type": "queue",

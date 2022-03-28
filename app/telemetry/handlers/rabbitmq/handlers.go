@@ -34,7 +34,6 @@ func (handler rabbitMQHandler) HandleMessages(ctx context.Context) error {
 
 	log.Println("Listening for messages on queue...")
 	for message := range ch {
-
 		// TODO: the logic should be in another function
 		moduleMessage := models.Message{}
 		err = json.Unmarshal(message.Body, &moduleMessage)
