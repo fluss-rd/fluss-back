@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	organizationName = "denys458@gmail.com"
-	bucketName       = "modules-data"
+	organizationName = "fluss"
+	bucketName       = "fluss-bucket"
 )
 
 type influxRepository struct {

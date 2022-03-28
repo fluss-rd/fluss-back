@@ -26,8 +26,29 @@ To rebuild an image you must use `docker-compose build` or `docker-compose up --
 
 You could assume that is the main file of all app/cmd/api-gateway/main.go
 
+
+## Requirements
+
+You need to have installed:
+
+- [Docker](https://docs.docker.com/engine/install/ubuntu/)
+- [docker-compose](https://docs.docker.com/compose/install/)
+
+## Run the projec
+
+**Configure the environment variables**:
+
+
+
+```
+docker-compose up
+```
+
 # Common Errors
 
 ## problems with docker-component up rabbit
 
 - make sure this file exists: /etc/rabbitmq/definitions.json
+
+
+

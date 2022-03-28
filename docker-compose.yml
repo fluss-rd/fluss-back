@@ -62,16 +62,19 @@ services:
       - ./mongo-data:/data/db
       - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     ports:
-      - 27017:27017
+      - 27018:27017
   rabbit:
-    image: rabbitmq:3-management-alpine
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.rabbit
     ports:
-        - 5672:5672
-        - 15672:15672
+        - 5673:5672
+        - 15673:15672
     environment:
-      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbitmq_management load_definitions "/tmp/rabbit.definitions.json"
-      - RABBITMQ_DEFAULT_USER=user
-      - RABBITMQ_DEFAULT_PASS=password
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbitmq_management load_definitions "/etc/rabbitmq/definitions.json"
+      - RABBITMQ_DEFAULT_USER=fluss-service
+      - RABBITMQ_DEFAULT_PASS=123456
+      - RABBITMQ_DEFAULT_VHOST=/
     volumes:
         - ./rabbit-data:/var/lib/rabbitmq/
         - ./rabbit/definitions.json:/tmp/rabbit.definitions.json
