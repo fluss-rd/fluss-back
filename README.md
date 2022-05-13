@@ -9,23 +9,28 @@ You need to have installed:
 
 ## Run the project
 
-**Configure the environment variables**:
+**Prerequisites**:
 
-- Make a copy of the content of `environment.example` into a new directory called `environment`
-- Configure the variables as needed
+- Configure the variables as needed in `environments/`. Remember that the ports you use in the `.env` files are the corresponding ports in the container.
+- Configure Influx DB:
+  - Run `docker-compose up influxdb`.
+  - Go to `localhost:8086`.
+  - Fill the form as needed, and use "fluss" as organization name and create a bucket with the name "fluss".
+  - Go to `reporting.local.env` and `telemetry.local.env` and replace `INFLUXDB_TOKEN` with the token get from `Load data -> Tokens` and clicking on `fluss's Token`.
 
-**Run the services**:
+To run the project just do:
 
 ```bash
 docker-compose up
 ```
 
-**Configure Influx DB**:
-
-- Go to `localhost:8086`
-- Fill the form as needed, and use "fluss" as organization name and create a bucket with the name "fluss" also
-- Go to `reporting.local.env` and `telemetry.local.env` and replace `INFLUXDB_TOKEN` with a token you can find going to `Load data -> Tokens` and clicking on `fluss's Token`.
-
 ## Notes
 
-The volumes are placed in the `.volumes` directory.
+Each service has is own volume. The volumes are in the following directories:
+
+- `influx-data/`
+- `mongo-data/`
+- `rabbit/`
+- `rabbit-data/`
+
+If you want to reset the state of the app just delete the corresponding volumes.
