@@ -16,7 +16,7 @@
 
 # Environmnent variable files
 *.env
-!environment.example/*.env
+!environment/*.env
 
 
 # IDE's stuff

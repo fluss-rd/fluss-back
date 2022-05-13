@@ -73,7 +73,7 @@ services:
     environment:
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbitmq_management load_definitions "/etc/rabbitmq/definitions.json"
       - RABBITMQ_DEFAULT_USER=fluss-service
-      - RABBITMQ_DEFAULT_PASS=123456
+      - RABBITMQ_DEFAULT_PASS=flusspassword
       - RABBITMQ_DEFAULT_VHOST=/
     volumes:
         - ./rabbit-data:/var/lib/rabbitmq/

@@ -29,8 +29,10 @@ func init() {
 
 func main() {
 	ctx := context.Background()
+	influxDbURL := os.Getenv("INFLUXDB_URL")
+	influxDbToken := os.Getenv("INFLUXDB_TOKEN")
 
-	client := influxdb2.NewClient(os.Getenv("INFLUXDB_URL"), os.Getenv("INFLUXDB_TOKEN"))
+	client := influxdb2.NewClient(influxDbURL, influxDbToken)
 
 	defer client.Close()
 

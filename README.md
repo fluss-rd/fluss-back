@@ -16,7 +16,7 @@ You need to have installed:
 
 **Run the services**:
 
-```
+```bash
 docker-compose up
 ```
 
@@ -24,5 +24,8 @@ docker-compose up
 
 - Go to `localhost:8086`
 - Fill the form as needed, and use "fluss" as organization name and create a bucket with the name "fluss" also
-- Go to `reporting.local.env` and `telemetry.local.env` and replace `INFLUXDB_TOKEN` with a token you can find going to `Load data -> Tokens` and click on `fluss's Token`
+- Go to `reporting.local.env` and `telemetry.local.env` and replace `INFLUXDB_TOKEN` with a token you can find going to `Load data -> Tokens` and clicking on `fluss's Token`.
 
+## Notes
+
+The volumes are placed in the `.volumes` directory.
