@@ -23,14 +23,3 @@ To run the project just do:
 ```bash
 docker-compose up
 ```
-
-## Notes
-
-Each service has is own volume. The volumes are in the following directories:
-
-- `influx-data/`
-- `mongo-data/`
-- `rabbit/`
-- `rabbit-data/`
-
-If you want to reset the state of the app just delete the corresponding volumes.
