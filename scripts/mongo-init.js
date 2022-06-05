@@ -28,7 +28,7 @@ db.roles.insert({
 db.users.insert({
     _id: "unique-id",
     email: "fluss-admin@admin.com",
-    password: "$2b$10$W8aSBwYLOANnCYUNEhM.runbR4fs7jBT5OPOWJkt7ShddmBfMUxvS",
+    password: "$2a$10$R2IhGdIKLQSY794Tn5p2huxw64eAWwFkCwyi.RgSWLq0Y634oLZ0G",
     roleName: "superAdmin"
 });
 
