@@ -36,6 +36,8 @@ services:
       dockerfile: docker/Dockerfile.accounts
     depends_on:
       - db
+    ports:
+      - "5003:5000"
   telemetry:
     ports:
       - "5002:5000"
