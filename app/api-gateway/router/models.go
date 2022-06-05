@@ -48,28 +48,27 @@ func newRouter(endpoint Endpoint, mode TransportMode, rabbitClient rabbit.Rabbit
 	return nil, ErrInvalidTransportMode
 }
 
-func (g Gateway) handleEndpoint(ctx context.Context, endpoint Endpoint, requestHandler *mux.Router) {
-	methods := []string{endpoint.Method}
-	if endpoint.Method != http.MethodOptions {
-		methods = append(methods, http.MethodOptions)
-	}
+func (gateway Gateway) handleEndpoint(ctx context.Context, endpoint Endpoint, requestHandler *mux.Router) {
+  path := endpoint.Path
+  handler := gateway.authMiddleware(ctx, gateway.Router.Route())
+  methods := getMethods(endpoint)
 
-	requestHandler.Handle(endpoint.Path, g.authMiddleware(ctx, g.Router.Route())).Methods(methods...)
+	requestHandler.Handle(path, handler).Methods(methods...)
 }
 
-func (g Gateway) authMiddleware(ctx context.Context, handler http.HandlerFunc) http.HandlerFunc {
+func (gateway Gateway) authMiddleware(ctx context.Context, handler http.HandlerFunc) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		setupPreflightResponse(&rw, r)
 		if r.Method == http.MethodOptions {
 			return
 		}
 
-		if !g.Endpoint.Authorized {
+		if !gateway.Endpoint.Authorized {
 			handler.ServeHTTP(rw, r)
 			return
 		}
 
-		resource, err := getResourceFromEndpoint(g.Endpoint)
+		resource, err := getResourceFromEndpoint(gateway.Endpoint)
 		if err != nil {
 			fmt.Println("getting_resource_from_endpoint_failed: %w", err)
 			httputils.RespondWithError(rw, err)
@@ -83,7 +82,7 @@ func (g Gateway) authMiddleware(ctx context.Context, handler http.HandlerFunc) h
 			return
 		}
 
-		sub, err := g.Authorizer.Authorize(ctx, r, resource, action)
+		sub, err := gateway.Authorizer.Authorize(ctx, r, resource, action)
 		if err != nil {
 			fmt.Println("authorization_failed: %w", err)
 			httputils.RespondWithError(rw, err)
@@ -94,4 +93,13 @@ func (g Gateway) authMiddleware(ctx context.Context, handler http.HandlerFunc) h
 
 		handler.ServeHTTP(rw, r)
 	}
+}
+
+func getMethods(endpoint Endpoint) []string {
+	methods := []string{endpoint.Method}
+	if endpoint.Method != http.MethodOptions {
+		methods = append(methods, http.MethodOptions)
+	}
+
+  return methods
 }
