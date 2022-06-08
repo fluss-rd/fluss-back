@@ -27,7 +27,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             "/account/login",
 				RemotePath:       "/login",
-				RemotHost:        "http://accounts-service:5000",
+				RemotHost:        "http://accounts:5000",
 				Method:           http.MethodPost,
 				Authorized:       false,
 				UseSharedOptions: true,
@@ -36,7 +36,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             "/account/login",
 				RemotePath:       "/login",
-				RemotHost:        "http://accounts-service:5000",
+				RemotHost:        "http://accounts:5000",
 				Method:           http.MethodOptions,
 				Authorized:       false,
 				UseSharedOptions: true,
@@ -45,7 +45,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             "/account/roles",
 				RemotePath:       "/roles",
-				RemotHost:        "http://accounts-service:5000",
+				RemotHost:        "http://accounts:5000",
 				Method:           http.MethodPost,
 				Authorized:       true,
 				UseSharedOptions: true,
@@ -54,7 +54,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             "/account/roles",
 				RemotePath:       "/roles",
-				RemotHost:        "http://accounts-service:5000",
+				RemotHost:        "http://accounts:5000",
 				Method:           http.MethodGet,
 				Authorized:       true,
 				UseSharedOptions: true,
@@ -63,7 +63,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             "/account/roles",
 				RemotePath:       "/roles",
-				RemotHost:        "http://accounts-service:5000",
+				RemotHost:        "http://accounts:5000",
 				Method:           http.MethodOptions,
 				Authorized:       false,
 				UseSharedOptions: true,
@@ -72,7 +72,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             "/account/roles",
 				RemotePath:       "/role",
-				RemotHost:        "http://accounts-service:5000",
+				RemotHost:        "http://accounts:5000",
 				Method:           http.MethodOptions,
 				Authorized:       false,
 				UseSharedOptions: true,
@@ -81,7 +81,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             "/account/users",
 				RemotePath:       "/users",
-				RemotHost:        "http://accounts-service:5000",
+				RemotHost:        "http://accounts:5000",
 				Method:           http.MethodPost,
 				Authorized:       true,
 				UseSharedOptions: true,
@@ -90,7 +90,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             "/account/users",
 				RemotePath:       "/users",
-				RemotHost:        "http://accounts-service:5000",
+				RemotHost:        "http://accounts:5000",
 				Method:           http.MethodGet,
 				Authorized:       true,
 				UseSharedOptions: true,
@@ -99,7 +99,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             "/account/users",
 				RemotePath:       "/users",
-				RemotHost:        "http://accounts-service:5000",
+				RemotHost:        "http://accounts:5000",
 				Method:           http.MethodOptions,
 				Authorized:       false,
 				UseSharedOptions: true,
@@ -108,7 +108,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             "/account/users/{id}",
 				RemotePath:       "/users/{id}",
-				RemotHost:        "http://accounts-service:5000",
+				RemotHost:        "http://accounts:5000",
 				Method:           http.MethodGet,
 				Authorized:       true,
 				UseSharedOptions: true,
@@ -117,7 +117,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             "/account/users/{id}",
 				RemotePath:       "/users/{id}",
-				RemotHost:        "http://accounts-service:5000",
+				RemotHost:        "http://accounts:5000",
 				Method:           http.MethodOptions,
 				Authorized:       false,
 				UseSharedOptions: true,
@@ -126,7 +126,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             "/account/users/{id}",
 				RemotePath:       "/users/{id}",
-				RemotHost:        "http://accounts-service:5000",
+				RemotHost:        "http://accounts:5000",
 				Method:           http.MethodPatch,
 				Authorized:       true,
 				UseSharedOptions: true,
@@ -135,7 +135,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             "/rivers",
 				RemotePath:       "/rivers",
-				RemotHost:        "http://river-management-service:5000",
+				RemotHost:        "http://river-management:5000",
 				Method:           http.MethodPost,
 				Authorized:       true,
 				UseSharedOptions: true,
@@ -144,7 +144,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             "/rivers/{id}",
 				RemotePath:       "/rivers/{id}",
-				RemotHost:        "http://river-management-service:5000",
+				RemotHost:        "http://river-management:5000",
 				Method:           http.MethodGet,
 				Authorized:       false,
 				UseSharedOptions: true,
@@ -153,7 +153,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             "/rivers",
 				RemotePath:       "/rivers",
-				RemotHost:        "http://river-management-service:5000",
+				RemotHost:        "http://river-management:5000",
 				Method:           http.MethodGet,
 				Authorized:       false,
 				UseSharedOptions: true,
@@ -162,7 +162,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             "/modules",
 				RemotePath:       "/modules",
-				RemotHost:        "http://river-management-service:5000",
+				RemotHost:        "http://river-management:5000",
 				Method:           http.MethodGet,
 				Authorized:       false,
 				UseSharedOptions: true,
@@ -171,7 +171,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             "/modules",
 				RemotePath:       "/modules",
-				RemotHost:        "http://river-management-service:5000",
+				RemotHost:        "http://river-management:5000",
 				Method:           http.MethodPost,
 				Authorized:       true,
 				UseSharedOptions: true,
@@ -180,7 +180,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             "/modules/{id}",
 				RemotePath:       "/modules/{id}",
-				RemotHost:        "http://river-management-service:5000",
+				RemotHost:        "http://river-management:5000",
 				Method:           http.MethodPatch,
 				Authorized:       true,
 				UseSharedOptions: true,
@@ -189,7 +189,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             `/modules/{id}`,
 				RemotePath:       `/modules/{id}`,
-				RemotHost:        "http://river-management-service:5000",
+				RemotHost:        "http://river-management:5000",
 				Method:           http.MethodGet,
 				Authorized:       false,
 				UseSharedOptions: true,
@@ -200,7 +200,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:             `/messages/{source}`,
 				RemotePath:       `/messages/{source}`,
-				RemotHost:        "http://telemetry-service:5000",
+				RemotHost:        "http://telemetry:5000",
 				Method:           http.MethodPost,
 				Authorized:       false,
 				UseSharedOptions: true,
@@ -219,7 +219,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:          `/reports/rivers/{id}`,
 				RemotePath:    `/reports/rivers/{id}`,
-				RemotHost:     "http://reporting-service:5000",
+				RemotHost:     "http://reporting:5000",
 				Method:        http.MethodGet,
 				Authorized:    false, //TODO: error handling when this is true an and no autorizer options are provided
 				TransportMode: router.TransportModeHTTP,
@@ -227,7 +227,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:          `/reports/modules`,
 				RemotePath:    `/reports/modules`,
-				RemotHost:     "http://reporting-service:5000",
+				RemotHost:     "http://reporting:5000",
 				Method:        http.MethodGet,
 				Authorized:    false, //TODO: error handling when this is true an and no autorizer options are provided
 				TransportMode: router.TransportModeHTTP,
@@ -235,7 +235,7 @@ var endpoints = []router.Endpoints{
 			{
 				Path:          `/reports/modules/{id}/details`,
 				RemotePath:    `/reports/modules/{id}/details`,
-				RemotHost:     "http://reporting-service:5000",
+				RemotHost:     "http://reporting:5000",
 				Method:        http.MethodGet,
 				Authorized:    false, //TODO: error handling when this is true an and no autorizer options are provided
 				TransportMode: router.TransportModeHTTP,
