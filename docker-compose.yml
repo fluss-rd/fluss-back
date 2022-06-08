@@ -1,13 +1,21 @@
 version: "3.4"
 services:
   api-gateway:
+    container_name: api-gateway
     env_file:
       - environment/api-gateway.local.env
     build:
       context: .
       dockerfile: docker/Dockerfile.apigateway
+      target: production
     ports:
       - "5000:5000"
+      - "2345:2345" # Debugging port
+    volumes: # For debugging
+      - ./app/cmd/api-gateway/:/go/src/github.com/flussrd/fluss-back/app/cmd/api-gateway/
+      - ./app/api-gateway/:/go/src/github.com/flussrd/fluss-back/app/api-gateway/
+    security_opt: # Because the debugger starts up the app and uses process forking to run the app, and this is not allowed
+      - seccomp:unconfined
     depends_on:
       - db
       - rabbit

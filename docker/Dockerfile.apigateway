@@ -1,16 +1,34 @@
+ARG app_home=/go/src/github.com/flussrd/fluss-back
+
+# Builder stage
 FROM golang:1.16-alpine as builder
-ENV APP_HOME /go/src/github.com/flussrd/fluss-back
+ARG app_home
+ENV APP_HOME $app_home
 
 RUN mkdir -p $APP_HOME
 ADD . $APP_HOME
 WORKDIR $APP_HOME
+
 RUN mkdir build
-
-RUN go build -o build/main ./app/cmd/api-gateway/main.go
-
+RUN go build -o build/main ./app/cmd/api-gateway/main.go 
 RUN chmod +x ./build/main
 
-FROM alpine:3.11.3
-COPY --from=builder /go/src/github.com/flussrd/fluss-back . 
+# Install git
+RUN apk update && apk upgrade && apk add --no-cache git dpkg gcc git musl-dev
+
+# Install debug server
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
+
+COPY ./app/cmd/api-gateway/debug.sh ./
+RUN chmod +x ./debug.sh
+
+ENTRYPOINT [ "./debug.sh" ]
+
+# Production stage
+FROM alpine:3.11.3 as production
+ARG app_home
+ENV APP_HOME $app_home
+
+COPY --from=builder $APP_HOME . 
 
 CMD ["./build/main"]
